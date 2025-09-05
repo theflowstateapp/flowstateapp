@@ -1,0 +1,65 @@
+# Life OS Environment Variables Template
+# Copy this file to .env and fill in your actual values
+
+# Supabase Configuration
+REACT_APP_SUPABASE_URL=your_supabase_project_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Razorpay Configuration (Indian Market)
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+REACT_APP_RAZORPAY_KEY_ID=your_razorpay_key_id
+
+# PayPal Configuration (Future International Expansion)
+PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+REACT_APP_PAYPAL_CLIENT_ID=your_paypal_client_id
+
+# Application Configuration
+NODE_ENV=development
+PORT=3000
+REACT_APP_API_URL=http://localhost:3000/api
+
+# Database Configuration
+DATABASE_URL=your_database_connection_string
+
+# Email Configuration (for notifications)
+SMTP_HOST=your_smtp_host
+SMTP_PORT=587
+SMTP_USER=your_smtp_username
+SMTP_PASS=your_smtp_password
+
+# Security
+JWT_SECRET=your_jwt_secret_key
+SESSION_SECRET=your_session_secret
+
+# Monitoring and Analytics
+SENTRY_DSN=your_sentry_dsn
+GOOGLE_ANALYTICS_ID=your_ga_tracking_id
+
+# File Storage (for future use)
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_REGION=ap-south-1
+AWS_S3_BUCKET=your_s3_bucket_name
+
+# AI Service Configuration
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# Usage Tracking Configuration
+USAGE_ALERT_THRESHOLD=80
+USAGE_ALERT_EMAIL=true
+BILLING_REMINDER_DAYS=7
+
+# Development Settings
+DEBUG=true
+LOG_LEVEL=info
+CORS_ORIGIN=http://localhost:3000
+
+# Production Settings (uncomment for production)
+# NODE_ENV=production
+# DEBUG=false
+# LOG_LEVEL=warn
+# CORS_ORIGIN=https://yourdomain.com

@@ -1,0 +1,1 @@
+CPO AGENT TASK: Optimize user onboarding experience. Current status: Frontend-backend connected, need to create seamless user flow from registration to first value. Focus on: 1) Onboarding tour 2) First-time user guidance 3) Feature discovery 4) User engagement optimization

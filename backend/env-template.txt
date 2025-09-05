@@ -1,0 +1,52 @@
+# LifeOS Backend Environment Configuration
+# Copy this file to .env and fill in your actual values
+
+# Server Configuration
+NODE_ENV=development
+PORT=3001
+
+# Supabase Configuration
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_change_in_production
+JWT_REFRESH_SECRET=your_super_secret_refresh_key_change_in_production
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+
+# Redis Configuration (for caching and sessions)
+REDIS_URL=redis://localhost:6379
+REDIS_PASSWORD=
+
+# Email Configuration (SendGrid)
+SENDGRID_API_KEY=your_sendgrid_api_key_here
+SENDGRID_FROM_EMAIL=noreply@yourdomain.com
+
+# File Storage (AWS S3)
+AWS_ACCESS_KEY_ID=your_aws_access_key_here
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key_here
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=your_s3_bucket_name_here
+
+# Monitoring (Sentry)
+SENTRY_DSN=your_sentry_dsn_here
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+API_RATE_LIMIT_MAX_REQUESTS=50
+
+# Security
+CORS_ORIGIN=http://localhost:3000
+ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
+
+# Logging
+LOG_LEVEL=debug
+LOG_FILE_PATH=./logs
+
+# Database
+DB_POOL_SIZE=10
+DB_CONNECTION_TIMEOUT=30000
+DB_IDLE_TIMEOUT=30000

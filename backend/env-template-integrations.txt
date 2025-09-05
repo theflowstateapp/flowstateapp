@@ -1,0 +1,74 @@
+# LifeOS Integration Environment Variables
+# Copy this file to .env and fill in your actual values
+
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+
+# Encryption Key (Generate a secure random key)
+ENCRYPTION_KEY=your-secure-encryption-key-here
+
+# OpenAI Configuration
+OPENAI_API_KEY=your-openai-api-key-here
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your-google-client-id-here
+GOOGLE_CLIENT_SECRET=your-google-client-secret-here
+GOOGLE_REDIRECT_URI=http://localhost:3001/api/auth/google/callback
+
+# Microsoft OAuth Configuration
+MICROSOFT_CLIENT_ID=your-microsoft-client-id-here
+MICROSOFT_CLIENT_SECRET=your-microsoft-client-secret-here
+MICROSOFT_REDIRECT_URI=http://localhost:3001/api/auth/microsoft/callback
+
+# Apple OAuth Configuration
+APPLE_CLIENT_ID=your-apple-client-id-here
+APPLE_CLIENT_SECRET=your-apple-client-secret-here
+APPLE_REDIRECT_URI=http://localhost:3001/api/auth/apple/callback
+
+# Todoist API Configuration
+TODOIST_CLIENT_ID=your-todoist-client-id-here
+TODOIST_CLIENT_SECRET=your-todoist-client-secret-here
+
+# Slack API Configuration
+SLACK_CLIENT_ID=your-slack-client-id-here
+SLACK_CLIENT_SECRET=your-slack-client-secret-here
+SLACK_SIGNING_SECRET=your-slack-signing-secret-here
+
+# Database Configuration (if using separate database for integrations)
+INTEGRATION_DB_URL=your-integration-database-url-here
+
+# Redis Configuration (for caching and session management)
+REDIS_URL=redis://localhost:6379
+
+# Logging Configuration
+LOG_LEVEL=info
+LOG_FILE=logs/integrations.log
+
+# Rate Limiting Configuration
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+INTEGRATION_RATE_LIMIT_MAX_REQUESTS=30
+
+# Sync Configuration
+DEFAULT_SYNC_FREQUENCY=hourly
+MAX_SYNC_RETRIES=3
+SYNC_TIMEOUT_MS=30000
+
+# Webhook Configuration
+WEBHOOK_SECRET=your-webhook-secret-here
+WEBHOOK_TIMEOUT_MS=10000
+
+# Security Configuration
+SESSION_SECRET=your-session-secret-here
+COOKIE_SECRET=your-cookie-secret-here
+
+# Monitoring Configuration
+SENTRY_DSN=your-sentry-dsn-here
+NEW_RELIC_LICENSE_KEY=your-new-relic-key-here
+
+# Development Configuration
+DEBUG=true
+ENABLE_MOCK_INTEGRATIONS=false
+
