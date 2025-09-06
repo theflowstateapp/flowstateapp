@@ -333,16 +333,35 @@ class IntegrationController {
   // Google Calendar methods
   async getGoogleCalendars(req, res) {
     try {
-      // Mock data for now
-      const calendars = [
-        {
-          id: 'primary',
-          summary: 'Primary Calendar',
-          description: 'Your main calendar',
-          timeZone: 'America/New_York',
-          accessRole: 'owner'
-        }
-      ];
+      const { accessToken } = req.query;
+      
+      if (!accessToken) {
+        return res.status(400).json({
+          success: false,
+          error: 'Access token required'
+        });
+      }
+
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+      );
+
+      oauth2Client.setCredentials({ access_token: accessToken });
+
+      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+      
+      const response = await calendar.calendarList.list();
+      const calendars = response.data.items.map(cal => ({
+        id: cal.id,
+        summary: cal.summary,
+        description: cal.description,
+        timeZone: cal.timeZone,
+        accessRole: cal.accessRole,
+        primary: cal.primary,
+        colorId: cal.colorId
+      }));
 
       res.json({
         success: true,
@@ -359,20 +378,54 @@ class IntegrationController {
 
   async getGoogleEvents(req, res) {
     try {
-      // Mock data for now
-      const events = [
-        {
-          id: 'event1',
-          summary: 'Team Meeting',
-          start: { dateTime: '2025-01-15T10:00:00Z' },
-          end: { dateTime: '2025-01-15T11:00:00Z' },
-          description: 'Weekly team sync'
-        }
-      ];
+      const { accessToken, calendarId = 'primary', timeMin, timeMax, maxResults = 100 } = req.query;
+      
+      if (!accessToken) {
+        return res.status(400).json({
+          success: false,
+          error: 'Access token required'
+        });
+      }
+
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+      );
+
+      oauth2Client.setCredentials({ access_token: accessToken });
+
+      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+      
+      const params = {
+        calendarId,
+        maxResults: parseInt(maxResults),
+        singleEvents: true,
+        orderBy: 'startTime'
+      };
+
+      if (timeMin) params.timeMin = timeMin;
+      if (timeMax) params.timeMax = timeMax;
+
+      const response = await calendar.events.list(params);
+      const events = response.data.items.map(event => ({
+        id: event.id,
+        summary: event.summary,
+        description: event.description,
+        start: event.start,
+        end: event.end,
+        location: event.location,
+        attendees: event.attendees,
+        status: event.status,
+        htmlLink: event.htmlLink,
+        created: event.created,
+        updated: event.updated
+      }));
 
       res.json({
         success: true,
-        events
+        events,
+        nextPageToken: response.data.nextPageToken
       });
     } catch (error) {
       console.error('Error fetching Google events:', error);
@@ -385,21 +438,64 @@ class IntegrationController {
 
   async createGoogleEvent(req, res) {
     try {
-      const { summary, start, end, description } = req.body;
+      const { accessToken, calendarId = 'primary', summary, start, end, description, location } = req.body;
 
-      // Mock event creation
+      if (!accessToken) {
+        return res.status(400).json({
+          success: false,
+          error: 'Access token required'
+        });
+      }
+
+      if (!summary || !start || !end) {
+        return res.status(400).json({
+          success: false,
+          error: 'Summary, start, and end are required'
+        });
+      }
+
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+      );
+
+      oauth2Client.setCredentials({ access_token: accessToken });
+
+      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+      
       const event = {
-        id: `event_${Date.now()}`,
         summary,
+        description,
         start,
         end,
-        description,
-        created: new Date().toISOString()
+        location,
+        reminders: {
+          useDefault: false,
+          overrides: [
+            { method: 'email', minutes: 24 * 60 },
+            { method: 'popup', minutes: 10 },
+          ],
+        },
       };
+
+      const response = await calendar.events.insert({
+        calendarId,
+        resource: event,
+      });
 
       res.json({
         success: true,
-        event,
+        event: {
+          id: response.data.id,
+          summary: response.data.summary,
+          description: response.data.description,
+          start: response.data.start,
+          end: response.data.end,
+          location: response.data.location,
+          htmlLink: response.data.htmlLink,
+          created: response.data.created
+        },
         message: 'Event created successfully'
       });
     } catch (error) {
@@ -411,33 +507,51 @@ class IntegrationController {
     }
   }
 
-  // Apple Reminders methods
+  // Apple Reminders methods - Alternative implementation
   async getAppleReminders(req, res) {
     try {
-      const mockReminders = [
+      // Since Apple Reminders doesn't have a public API, we'll provide alternatives
+      const alternatives = [
         {
-          id: 'reminder1',
-          title: 'Buy groceries',
-          notes: 'Milk, bread, eggs',
-          dueDate: '2025-01-15T18:00:00Z',
-          priority: 'medium',
-          completed: false,
-          list: 'Personal'
+          id: 'csv_import',
+          name: 'CSV Import',
+          description: 'Import reminders from CSV file exported from Apple Reminders',
+          type: 'file_upload',
+          supported: true
         },
         {
-          id: 'reminder2',
-          title: 'Call dentist',
-          notes: 'Schedule checkup',
-          dueDate: '2025-01-16T14:00:00Z',
-          priority: 'high',
-          completed: false,
-          list: 'Health'
+          id: 'ical_import', 
+          name: 'iCal Import',
+          description: 'Import reminders from iCal file',
+          type: 'file_upload',
+          supported: true
+        },
+        {
+          id: 'manual_entry',
+          name: 'Manual Entry',
+          description: 'Manually add reminders to LifeOS',
+          type: 'manual',
+          supported: true
+        },
+        {
+          id: 'todoist_sync',
+          name: 'Todoist Sync',
+          description: 'Use Todoist as an alternative to Apple Reminders',
+          type: 'integration',
+          supported: true
         }
       ];
 
       res.json({
         success: true,
-        reminders: mockReminders
+        message: 'Apple Reminders API not available. Here are alternative options:',
+        alternatives,
+        instructions: {
+          csv_import: 'Export your Apple Reminders as CSV from the Reminders app, then upload here',
+          ical_import: 'Export your Apple Reminders as iCal from the Reminders app, then upload here',
+          manual_entry: 'Add reminders directly in LifeOS',
+          todoist_sync: 'Connect Todoist integration instead'
+        }
       });
     } catch (error) {
       console.error('Error fetching Apple reminders:', error);
