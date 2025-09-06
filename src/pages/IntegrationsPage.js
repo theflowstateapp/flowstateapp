@@ -71,7 +71,12 @@ const IntegrationsPage = () => {
           window.open(data.authUrl, '_blank', 'width=600,height=600');
         } else {
           // Direct connection (like Apple Reminders)
-          alert(data.message);
+          if (integrationId === 'apple-reminders' && data.mockData) {
+            const remindersCount = data.mockData.remindersCount;
+            alert(`${data.message}\n\nImported ${remindersCount} reminders successfully!`);
+          } else {
+            alert(data.message);
+          }
           fetchIntegrations(); // Refresh the list
         }
       } else {
@@ -112,7 +117,11 @@ const IntegrationsPage = () => {
       const data = await response.json();
       
       if (data.success) {
-        alert(`${data.message}\nItems synced: ${data.itemsSynced}`);
+        if (integrationId === 'apple-reminders') {
+          alert(`${data.message}\n\nSynced ${data.itemsSynced} reminders successfully!`);
+        } else {
+          alert(`${data.message}\nItems synced: ${data.itemsSynced}`);
+        }
       } else {
         alert(`Failed to sync: ${data.error}`);
       }

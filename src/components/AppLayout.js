@@ -59,6 +59,7 @@ import System from '../pages/System';
 import SettingsPage from '../pages/Settings';
 import Help from '../pages/Help';
 import IntegrationsPage from '../pages/IntegrationsPage';
+import ProductAnalyticsDashboard from '../pages/ProductAnalyticsDashboard';
 import QuickCapture from '../pages/QuickCapture';
 import LifeTracker from '../pages/LifeTracker';
 

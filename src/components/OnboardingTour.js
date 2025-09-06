@@ -406,12 +406,19 @@ const OnboardingTour = ({ isFirstTime, onComplete }) => {
     continuous: true,
     showProgress: true,
     showSkipButton: true,
-    hideCloseButton: false,
+    hideCloseButton: true,
     disableOverlayClose: true,
     spotlightClicks: false,
     disableScrolling: false,
     scrollOffset: 100,
     scrollDuration: 300,
+    locale: {
+      back: 'Back',
+      close: 'Close',
+      last: 'Finish',
+      next: 'Next',
+      skip: 'Skip Tour'
+    },
     styles: {
       options: {
         primaryColor: '#3B82F6',
@@ -517,7 +524,7 @@ const OnboardingTour = ({ isFirstTime, onComplete }) => {
         onComplete();
       }
     } else if (type === EVENTS.STEP_AFTER) {
-      // Step completed
+      // Step completed - update step index
       setStepIndex(index);
       console.log(`Completed step ${index}`);
     } else if (type === EVENTS.TARGET_NOT_FOUND) {
@@ -525,8 +532,16 @@ const OnboardingTour = ({ isFirstTime, onComplete }) => {
       console.warn(`Target not found for step ${index}`);
       // Continue to next step
       setStepIndex(index + 1);
+    } else if (action === ACTIONS.NEXT) {
+      // Next button clicked
+      setStepIndex(index + 1);
+      console.log(`Moving to step ${index + 1}`);
+    } else if (action === ACTIONS.PREV) {
+      // Previous button clicked
+      setStepIndex(index - 1);
+      console.log(`Moving to step ${index - 1}`);
     }
-  }, [stepIndex, onComplete]);
+  }, [onComplete]);
 
   // Start tour for first-time users with better timing
   useEffect(() => {

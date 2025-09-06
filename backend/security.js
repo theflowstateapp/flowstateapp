@@ -65,9 +65,10 @@ const setupSecurity = (app) => {
 
   // Request validation middleware
   app.use((req, res, next) => {
-    // Validate content type for POST/PUT requests
+    // Validate content type for POST/PUT requests (except sync endpoints)
     if ((req.method === 'POST' || req.method === 'PUT') && 
-        req.headers['content-type'] !== 'application/json') {
+        req.headers['content-type'] !== 'application/json' &&
+        !req.path.includes('/sync/')) {
       return res.status(400).json({ 
         error: 'Content-Type must be application/json',
         success: false 

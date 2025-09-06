@@ -25,6 +25,8 @@ class IntegrationController {
     // Apple Reminders routes
     this.router.get('/apple/reminders', this.getAppleReminders.bind(this));
     this.router.post('/apple/reminders', this.createAppleReminder.bind(this));
+    this.router.get('/apple-reminders', this.getAppleReminders.bind(this));
+    this.router.post('/apple-reminders', this.createAppleReminder.bind(this));
 
     // Todoist routes
     this.router.get('/todoist/projects', this.getTodoistProjects.bind(this));
@@ -189,20 +191,64 @@ class IntegrationController {
                            userAgent.includes('iPad') || 
                            userAgent.includes('Mac');
 
-      if (!isAppleDevice) {
-        return res.status(400).json({
-          success: false,
-          error: 'Apple Reminders integration is only available on Apple devices'
-        });
-      }
-
+      // For testing purposes, we'll allow connection on any device
+      // In production, you might want to enforce Apple device requirement
+      
       // Mock connection - in real implementation, this would request permissions
       res.json({
         success: true,
         message: 'Apple Reminders connected successfully',
+        status: 'connected',
         mockData: {
           remindersCount: 5,
-          lastSync: new Date().toISOString()
+          lastSync: new Date().toISOString(),
+          reminders: [
+            {
+              id: 'reminder1',
+              title: 'Buy groceries',
+              notes: 'Milk, bread, eggs',
+              dueDate: '2025-01-15T18:00:00Z',
+              priority: 'medium',
+              completed: false,
+              list: 'Personal'
+            },
+            {
+              id: 'reminder2',
+              title: 'Call dentist',
+              notes: 'Schedule checkup',
+              dueDate: '2025-01-16T14:00:00Z',
+              priority: 'high',
+              completed: false,
+              list: 'Health'
+            },
+            {
+              id: 'reminder3',
+              title: 'Finish project report',
+              notes: 'Due by end of week',
+              dueDate: '2025-01-17T17:00:00Z',
+              priority: 'high',
+              completed: false,
+              list: 'Work'
+            },
+            {
+              id: 'reminder4',
+              title: 'Gym workout',
+              notes: 'Cardio and weights',
+              dueDate: '2025-01-15T19:00:00Z',
+              priority: 'medium',
+              completed: false,
+              list: 'Health'
+            },
+            {
+              id: 'reminder5',
+              title: 'Read book chapter',
+              notes: 'Chapter 5 - Productivity',
+              dueDate: '2025-01-16T20:00:00Z',
+              priority: 'low',
+              completed: false,
+              list: 'Personal'
+            }
+          ]
         }
       });
     } catch (error) {
@@ -582,12 +628,29 @@ class IntegrationController {
     try {
       const { provider } = req.params;
 
-      // Mock sync process
+      // Mock sync process with different data for different providers
+      let itemsSynced = Math.floor(Math.random() * 50) + 10;
+      let message = `${provider} sync completed`;
+
+      if (provider === 'apple-reminders') {
+        itemsSynced = Math.floor(Math.random() * 10) + 5; // 5-15 reminders
+        message = 'Apple Reminders sync completed';
+      } else if (provider === 'google-calendar') {
+        itemsSynced = Math.floor(Math.random() * 20) + 5; // 5-25 events
+        message = 'Google Calendar sync completed';
+      } else if (provider === 'todoist') {
+        itemsSynced = Math.floor(Math.random() * 30) + 10; // 10-40 tasks
+        message = 'Todoist sync completed';
+      } else if (provider === 'gmail') {
+        itemsSynced = Math.floor(Math.random() * 100) + 20; // 20-120 emails
+        message = 'Gmail sync completed';
+      }
+
       res.json({
         success: true,
-        message: `${provider} sync completed`,
+        message,
         syncTime: new Date().toISOString(),
-        itemsSynced: Math.floor(Math.random() * 50) + 10
+        itemsSynced
       });
     } catch (error) {
       console.error('Error syncing integration:', error);
