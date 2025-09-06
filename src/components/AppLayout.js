@@ -18,7 +18,6 @@ import Sidebar from './Sidebar';
 import OnboardingTour from './OnboardingTour';
 import NotificationSystem from './NotificationSystem';
 import { QuickFeedback } from './FeedbackModal';
-import DevPanel from './DevPanel';
 import ErrorBoundary from './ErrorBoundary';
 import AIAssistant from '../pages/AIAssistant';
 import Analytics from '../pages/Analytics';
@@ -115,8 +114,6 @@ const AppLayout = () => {
         {/* Quick Feedback */}
         <QuickFeedback />
 
-        {/* Development Panel */}
-        <DevPanel />
 
       {/* Fixed Header - Responsive */}
       <div className="fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b border-gray-200/50 z-50 flex items-center justify-between px-4 lg:px-6 shadow-sm">

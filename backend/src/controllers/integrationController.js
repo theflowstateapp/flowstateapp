@@ -28,6 +28,9 @@ class IntegrationController {
     this.router.get('/apple-reminders', this.getAppleReminders.bind(this));
     this.router.post('/apple-reminders', this.createAppleReminder.bind(this));
 
+    // OAuth callback routes
+    this.router.get('/auth/google/callback', this.handleGoogleCallback.bind(this));
+
     // Todoist routes
     this.router.get('/todoist/projects', this.getTodoistProjects.bind(this));
     this.router.get('/todoist/tasks', this.getTodoistTasks.bind(this));
@@ -507,7 +510,84 @@ class IntegrationController {
     }
   }
 
-  // Apple Reminders methods - Alternative implementation
+  // OAuth callback handlers
+  async handleGoogleCallback(req, res) {
+    try {
+      const { code, state } = req.query;
+      
+      if (!code) {
+        return res.status(400).json({
+          success: false,
+          error: 'Authorization code not provided'
+        });
+      }
+
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+      );
+
+      // Exchange code for tokens
+      const { tokens } = await oauth2Client.getToken(code);
+      oauth2Client.setCredentials(tokens);
+
+      // Get user info
+      const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
+      const { data: userInfo } = await oauth2.userinfo.get();
+
+      // Store tokens (in production, store in database)
+      console.log('Google OAuth successful:', {
+        userId: userInfo.id,
+        email: userInfo.email,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token
+      });
+
+      // Close the popup window and notify parent
+      res.send(`
+        <html>
+          <body>
+            <script>
+              window.opener.postMessage({
+                type: 'GOOGLE_OAUTH_SUCCESS',
+                data: {
+                  success: true,
+                  message: 'Google Calendar connected successfully',
+                  user: {
+                    id: '${userInfo.id}',
+                    email: '${userInfo.email}',
+                    name: '${userInfo.name}'
+                  }
+                }
+              }, '*');
+              window.close();
+            </script>
+            <p>Google Calendar connected successfully! You can close this window.</p>
+          </body>
+        </html>
+      `);
+    } catch (error) {
+      console.error('Google OAuth callback error:', error);
+      res.send(`
+        <html>
+          <body>
+            <script>
+              window.opener.postMessage({
+                type: 'GOOGLE_OAUTH_ERROR',
+                data: {
+                  success: false,
+                  error: 'Failed to connect Google Calendar'
+                }
+              }, '*');
+              window.close();
+            </script>
+            <p>Failed to connect Google Calendar. You can close this window.</p>
+          </body>
+        </html>
+      `);
+    }
+  }
   async getAppleReminders(req, res) {
     try {
       // Since Apple Reminders doesn't have a public API, we'll provide alternatives

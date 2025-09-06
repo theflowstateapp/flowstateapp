@@ -30,6 +30,22 @@ const IntegrationsPage = () => {
   // Fetch integrations on component mount
   useEffect(() => {
     fetchIntegrations();
+    
+    // Listen for OAuth callback messages
+    const handleOAuthMessage = (event) => {
+      if (event.data.type === 'GOOGLE_OAUTH_SUCCESS') {
+        alert(event.data.data.message);
+        fetchIntegrations(); // Refresh the list
+      } else if (event.data.type === 'GOOGLE_OAUTH_ERROR') {
+        alert(`OAuth Error: ${event.data.data.error}`);
+      }
+    };
+
+    window.addEventListener('message', handleOAuthMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleOAuthMessage);
+    };
   }, []);
 
   const fetchIntegrations = async () => {

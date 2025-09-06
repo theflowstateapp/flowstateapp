@@ -64,8 +64,7 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
     organize: true,
     review: false,
     engage: false,
-    ai: false,
-    integrations: true
+    ai: false
   });
 
   const toggleSection = (section) => {
@@ -75,7 +74,7 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
     }));
   };
 
-  // GTD Navigation Structure - Following Getting Things Done Methodology
+  // GTD Navigation Structure - Clean and Modern
   const navigationItems = [
     {
       section: 'flow',
@@ -83,11 +82,10 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       icon: Brain,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
-      description: 'Your command center for peak performance',
       items: [
         { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, aiPowered: true },
         { name: 'Calendar', path: '/calendar', icon: Calendar, aiPowered: false },
-        { name: 'Flow Insights', path: '/analytics', icon: PieChart, aiPowered: true }
+        { name: 'Analytics', path: '/analytics', icon: PieChart, aiPowered: true }
       ]
     },
     {
@@ -96,7 +94,6 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       icon: Zap,
       color: 'text-cyan-600',
       bgColor: 'bg-cyan-50',
-      description: 'Capture thoughts instantly',
       items: [
         { name: 'Inbox', path: '/inbox', icon: Inbox, aiPowered: true },
         { name: 'Quick Capture', path: '/quick-capture', icon: Plus, aiPowered: true },
@@ -109,7 +106,6 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       icon: RefreshCw,
       color: 'text-emerald-600',
       bgColor: 'bg-emerald-50',
-      description: 'Process your inbox items',
       items: [
         { name: 'Inbox Processing', path: '/inbox-processing', icon: RefreshCw, aiPowered: true },
         { name: 'Review System', path: '/review', icon: CheckCircle, aiPowered: true }
@@ -121,7 +117,6 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       icon: Target,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
-      description: 'Structure using PARA method',
       items: [
         { name: 'Projects', path: '/projects', icon: Target, aiPowered: false },
         { name: 'Areas', path: '/areas', icon: Heart, aiPowered: false },
@@ -135,7 +130,6 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       icon: CheckCircle,
       color: 'text-amber-600',
       bgColor: 'bg-amber-50',
-      description: 'Weekly and daily reviews',
       items: [
         { name: 'Weekly Review', path: '/weekly-review', icon: CheckCircle, aiPowered: true },
         { name: 'Daily Review', path: '/daily-review', icon: Calendar, aiPowered: true },
@@ -148,7 +142,6 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       icon: Focus,
       color: 'text-indigo-600',
       bgColor: 'bg-indigo-50',
-      description: 'Focus on what matters',
       items: [
         { name: 'Next Actions', path: '/tasks', icon: CheckCircle, aiPowered: false },
         { name: 'Waiting For', path: '/waiting', icon: Clock, aiPowered: false },
@@ -161,23 +154,18 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       icon: Bot,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
-      description: 'Your intelligent productivity coach',
       items: [
         { name: 'Chat Assistant', path: '/ai-assistant', icon: MessageSquare, aiPowered: true },
         { name: 'Smart Workflows', path: '/workflows', icon: Workflow, aiPowered: true }
       ]
-    },
-    {
-      section: 'integrations',
-      title: 'Integrations',
-      icon: Settings,
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-      description: 'Connect external services',
-      items: [
-        { name: 'Manage Integrations', path: '/integrations', icon: Settings, aiPowered: false }
-      ]
     }
+  ];
+
+  // Settings and Integrations moved to bottom section
+  const bottomItems = [
+    { name: 'Integrations', path: '/integrations', icon: Settings, aiPowered: false },
+    { name: 'Settings', path: '/settings', icon: Settings, aiPowered: false },
+    { name: 'Help', path: '/help', icon: HelpCircle, aiPowered: false }
   ];
 
   const isActive = (path) => {
@@ -212,7 +200,7 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
               {/* Section Header with AI Indicator */}
               <button
                 onClick={() => toggleSection(section.section)}
-                className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 hover:shadow-sm ${section.bgColor} ${section.color}`}
+                className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 hover:shadow-sm ${section.bgColor} ${section.color}`}
               >
                 <div className="flex items-center space-x-2">
                   <section.icon size={16} className={section.color} />
@@ -230,11 +218,6 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
                   <ChevronRight size={14} className={section.color} />
                 )}
               </button>
-
-              {/* Section Description */}
-              <div className="px-3 py-1">
-                <p className="text-xs text-gray-600 leading-relaxed">{section.description}</p>
-              </div>
 
               {/* Section Items */}
               <AnimatePresence>
@@ -289,7 +272,26 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
           ))}
         </nav>
       </div>
-    </div>
+
+      {/* Bottom Section - Settings & Integrations */}
+      <div className="border-t border-gray-200/50 p-2">
+        <nav className="space-y-1">
+          {bottomItems.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`w-full flex items-center space-x-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                isActive(item.path)
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}
+            >
+              <item.icon size={16} className="flex-shrink-0" />
+              <span className="truncate">{item.name}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
   );
 };
 
