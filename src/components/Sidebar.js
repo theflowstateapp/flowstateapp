@@ -65,7 +65,7 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
     review: false,
     engage: false,
     ai: false,
-    integrations: false
+    integrations: true
   });
 
   const toggleSection = (section) => {

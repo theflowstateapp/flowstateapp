@@ -164,6 +164,13 @@ const AppLayout = () => {
                   Settings
                 </button>
                 <button 
+                  onClick={() => navigate('/integrations')}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                >
+                  <Settings size={16} className="mr-3" />
+                  Integrations
+                </button>
+                <button 
                   onClick={logout}
                   className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
                 >
