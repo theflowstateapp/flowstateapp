@@ -6,6 +6,7 @@ import { logger } from './lib/logger';
 import performanceMonitor from './utils/performanceMonitor';
 import { initAnalytics, trackPageView } from './utils/analytics';
 import { initSEO } from './utils/seo';
+import { initSecurity } from './utils/security';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -14,7 +15,7 @@ import AppLayout from './components/AppLayout';
 import TestPage from './pages/TestPage';
 
 function App() {
-  // Initialize logging, performance monitoring, analytics, and SEO
+  // Initialize logging, performance monitoring, analytics, SEO, and security
   React.useEffect(() => {
     logger.info('APP', 'Flow State application started', {
       version: process.env.REACT_APP_VERSION || '1.0.0',
@@ -30,6 +31,9 @@ function App() {
     
     // Initialize SEO
     initSEO();
+    
+    // Initialize security measures
+    initSecurity();
     
     // Report app startup performance
     setTimeout(() => {
