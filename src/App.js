@@ -3,6 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './lib/errorHandler';
 import { logger } from './lib/logger';
+import performanceMonitor from './utils/performanceMonitor';
+import { initAnalytics, trackPageView } from './utils/analytics';
+import { initSEO } from './utils/seo';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -11,13 +14,28 @@ import AppLayout from './components/AppLayout';
 import TestPage from './pages/TestPage';
 
 function App() {
-  // Initialize logging
+  // Initialize logging, performance monitoring, analytics, and SEO
   React.useEffect(() => {
     logger.info('APP', 'Flow State application started', {
       version: process.env.REACT_APP_VERSION || '1.0.0',
       environment: process.env.NODE_ENV,
       timestamp: new Date().toISOString()
     });
+
+    // Initialize performance monitoring
+    performanceMonitor.init();
+    
+    // Initialize analytics
+    initAnalytics();
+    
+    // Initialize SEO
+    initSEO();
+    
+    // Report app startup performance
+    setTimeout(() => {
+      const metrics = performanceMonitor.getMetrics();
+      logger.info('PERFORMANCE', 'App startup metrics', metrics);
+    }, 2000);
   }, []);
 
   return (

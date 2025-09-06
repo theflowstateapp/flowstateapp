@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://theflowstateapp.com/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1
+
+# Disallow admin and API routes
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Allow important pages
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /contact
+Allow: /dashboard
+Allow: /projects
+Allow: /areas
+Allow: /resources
+Allow: /archives
