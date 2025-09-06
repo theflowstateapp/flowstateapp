@@ -87,7 +87,11 @@ const IntegrationsPage = () => {
           window.open(data.authUrl, '_blank', 'width=600,height=600');
         } else {
           // Direct connection (like Apple Reminders)
-          if (integrationId === 'apple-reminders' && data.mockData) {
+          if (integrationId === 'apple-reminders' && data.alternatives) {
+            // Show alternatives for Apple Reminders
+            const alternativesText = data.alternatives.map(alt => `• ${alt.name}: ${alt.description}`).join('\n');
+            alert(`${data.message}\n\nAvailable options:\n${alternativesText}\n\nNote: Apple Reminders doesn't have a public API. Please use one of the alternatives above.`);
+          } else if (integrationId === 'apple-reminders' && data.mockData) {
             const remindersCount = data.mockData.remindersCount;
             alert(`${data.message}\n\nImported ${remindersCount} reminders successfully!`);
           } else {

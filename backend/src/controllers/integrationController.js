@@ -197,61 +197,48 @@ class IntegrationController {
       // For testing purposes, we'll allow connection on any device
       // In production, you might want to enforce Apple device requirement
       
-      // Mock connection - in real implementation, this would request permissions
+      // Since Apple Reminders doesn't have a public API, we'll provide alternatives
+      const alternatives = [
+        {
+          id: 'csv_import',
+          name: 'CSV Import',
+          description: 'Import reminders from CSV file exported from Apple Reminders',
+          type: 'file_upload',
+          supported: true
+        },
+        {
+          id: 'ical_import', 
+          name: 'iCal Import',
+          description: 'Import reminders from iCal file',
+          type: 'file_upload',
+          supported: true
+        },
+        {
+          id: 'manual_entry',
+          name: 'Manual Entry',
+          description: 'Manually add reminders to LifeOS',
+          type: 'manual',
+          supported: true
+        },
+        {
+          id: 'todoist_sync',
+          name: 'Todoist Sync',
+          description: 'Use Todoist as an alternative to Apple Reminders',
+          type: 'integration',
+          supported: true
+        }
+      ];
+
       res.json({
         success: true,
-        message: 'Apple Reminders connected successfully',
-        status: 'connected',
-        mockData: {
-          remindersCount: 5,
-          lastSync: new Date().toISOString(),
-          reminders: [
-            {
-              id: 'reminder1',
-              title: 'Buy groceries',
-              notes: 'Milk, bread, eggs',
-              dueDate: '2025-01-15T18:00:00Z',
-              priority: 'medium',
-              completed: false,
-              list: 'Personal'
-            },
-            {
-              id: 'reminder2',
-              title: 'Call dentist',
-              notes: 'Schedule checkup',
-              dueDate: '2025-01-16T14:00:00Z',
-              priority: 'high',
-              completed: false,
-              list: 'Health'
-            },
-            {
-              id: 'reminder3',
-              title: 'Finish project report',
-              notes: 'Due by end of week',
-              dueDate: '2025-01-17T17:00:00Z',
-              priority: 'high',
-              completed: false,
-              list: 'Work'
-            },
-            {
-              id: 'reminder4',
-              title: 'Gym workout',
-              notes: 'Cardio and weights',
-              dueDate: '2025-01-15T19:00:00Z',
-              priority: 'medium',
-              completed: false,
-              list: 'Health'
-            },
-            {
-              id: 'reminder5',
-              title: 'Read book chapter',
-              notes: 'Chapter 5 - Productivity',
-              dueDate: '2025-01-16T20:00:00Z',
-              priority: 'low',
-              completed: false,
-              list: 'Personal'
-            }
-          ]
+        message: 'Apple Reminders integration options available',
+        status: 'setup_required',
+        alternatives,
+        instructions: {
+          csv_import: 'Export your Apple Reminders as CSV from the Reminders app, then upload here',
+          ical_import: 'Export your Apple Reminders as iCal from the Reminders app, then upload here',
+          manual_entry: 'Add reminders directly in LifeOS',
+          todoist_sync: 'Connect Todoist integration instead'
         }
       });
     } catch (error) {
