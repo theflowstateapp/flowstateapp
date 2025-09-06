@@ -12,11 +12,13 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { DataProvider } from '../contexts/DataContext';
 import { UserAnalytics } from '../lib/userAnalytics';
+import { TourUtils } from '../utils/tourUtils';
 import FlowStateLogo from './FlowStateLogo';
 import Sidebar from './Sidebar';
 import OnboardingTour from './OnboardingTour';
 import NotificationSystem from './NotificationSystem';
 import { QuickFeedback } from './FeedbackModal';
+import DevPanel from './DevPanel';
 import ErrorBoundary from './ErrorBoundary';
 import AIAssistant from '../pages/AIAssistant';
 import Analytics from '../pages/Analytics';
@@ -71,7 +73,7 @@ const AppLayout = () => {
   useEffect(() => {
     const isNewUser = !localStorage.getItem('flowstate-tour-completed');
     
-    if (isNewUser) {
+    if (isNewUser && user) {
       // Track tour start for analytics
       setOnboardingStartTime(Date.now());
       UserAnalytics.trackTourStart();
@@ -99,14 +101,21 @@ const AppLayout = () => {
       <div className={`flex h-screen ${darkMode ? 'dark' : ''}`}>
         {/* Onboarding Tour */}
         <OnboardingTour
-          isFirstTime={!localStorage.getItem('flowstate-tour-completed')}
+          isFirstTime={user && !localStorage.getItem('flowstate-tour-completed')}
           onComplete={() => {
             localStorage.setItem('flowstate-tour-completed', 'true');
+            if (onboardingStartTime) {
+              const completionTime = Date.now() - onboardingStartTime;
+              UserAnalytics.trackTourComplete(completionTime);
+            }
           }}
         />
 
         {/* Quick Feedback */}
         <QuickFeedback />
+
+        {/* Development Panel */}
+        <DevPanel />
 
       {/* Fixed Header - Responsive */}
       <div className="fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b border-gray-200/50 z-50 flex items-center justify-between px-4 lg:px-6 shadow-sm">

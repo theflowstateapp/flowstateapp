@@ -241,10 +241,15 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
                           item.path === '/ai-assistant' ? 'voice-ai' :
                           item.path === '/tasks' ? 'task-management' :
                           item.path === '/projects' ? 'projects' :
+                          item.path === '/areas' ? 'areas' :
+                          item.path === '/resources' ? 'resources' :
+                          item.path === '/archives' ? 'archives' :
                           item.path === '/calendar' ? 'calendar' :
                           item.path === '/analytics' ? 'analytics' :
                           item.path === '/settings' ? 'settings' :
-                          item.path === '/areas' ? 'life-areas' :
+                          item.path === '/voice-capture' ? 'voice-ai' :
+                          item.path === '/quick-capture' ? 'voice-ai' :
+                          item.path === '/inbox' ? 'voice-ai' :
                           null
                         }
                         className={`w-full flex items-center justify-between px-2 py-1.5 text-sm rounded-lg transition-colors ${
