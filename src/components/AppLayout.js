@@ -58,7 +58,7 @@ import Review from '../pages/Review';
 import System from '../pages/System';
 import SettingsPage from '../pages/Settings';
 import Help from '../pages/Help';
-import ProductAnalyticsDashboard from '../pages/ProductAnalyticsDashboard';
+import IntegrationsPage from '../pages/IntegrationsPage';
 import QuickCapture from '../pages/QuickCapture';
 import LifeTracker from '../pages/LifeTracker';
 
@@ -253,6 +253,7 @@ const AppLayout = () => {
             <Route path="/review" element={<Review />} />
             <Route path="/system" element={<System />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/integrations" element={<IntegrationsPage />} />
             <Route path="/help" element={<Help />} />
             <Route path="/product-analytics" element={<ProductAnalyticsDashboard />} />
           </Routes>

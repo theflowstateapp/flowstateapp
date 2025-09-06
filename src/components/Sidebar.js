@@ -64,7 +64,8 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
     organize: true,
     review: false,
     engage: false,
-    ai: false
+    ai: false,
+    integrations: false
   });
 
   const toggleSection = (section) => {
@@ -164,6 +165,17 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       items: [
         { name: 'Chat Assistant', path: '/ai-assistant', icon: MessageSquare, aiPowered: true },
         { name: 'Smart Workflows', path: '/workflows', icon: Workflow, aiPowered: true }
+      ]
+    },
+    {
+      section: 'integrations',
+      title: 'Integrations',
+      icon: Settings,
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50',
+      description: 'Connect external services',
+      items: [
+        { name: 'Manage Integrations', path: '/integrations', icon: Settings, aiPowered: false }
       ]
     }
   ];

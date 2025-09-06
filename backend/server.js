@@ -726,7 +726,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Apple Reminders Integration endpoints
+
+// Apple Reminders Integration endpoints (legacy - keeping for backward compatibility)
 app.get('/api/integrations/apple-reminders/status', (req, res) => {
   try {
     // Check if running on Apple device
@@ -933,6 +934,13 @@ app.delete('/api/integrations/apple-reminders/reminders/:id', (req, res) => {
     });
   }
 });
+
+// Import integration controller
+const IntegrationController = require('./src/controllers/integrationController');
+const integrationController = new IntegrationController();
+
+// Integration management routes
+app.use('/api/integrations', integrationController.router);
 
 // 404 handler
 app.use((req, res) => {
