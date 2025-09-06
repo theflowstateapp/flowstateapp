@@ -292,6 +292,7 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
           ))}
         </nav>
       </div>
+    </div>
   );
 };
 
