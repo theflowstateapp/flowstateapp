@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Vercel node function config (helps with recognition + region)
-export const config = { runtime: "nodejs18.x", maxDuration: 5, regions: ["bom1"] };
+export const config = { runtime: "nodejs", maxDuration: 5, regions: ["bom1"] };
 
 // bump this string each commit (or set via env in CI)
 const BUILD_ID = process.env.SITE_BUILD_ID || new Date().toISOString();
