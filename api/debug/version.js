@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       buildId: BUILD_ID,
       env: process.env.VERCEL_ENV || process.env.NODE_ENV || 'development',
       region: process.env.VERCEL_REGION || 'unknown',
-      runtime: 'nodejs18.x'
+      runtime: 'nodejs'
     };
 
     res.status(200).json(response);
