@@ -1,0 +1,9 @@
+# This is a placeholder for the OG image
+# In production, you would create a 1200x630 PNG image with:
+# - FlowState branding
+# - "AI tasking with PARA & time-boxing" tagline
+# - Professional design with brand colors
+# - Save as /public/og.png
+
+# For now, we'll use a simple text-based approach
+# The actual image should be created with a design tool like Figma or Canva

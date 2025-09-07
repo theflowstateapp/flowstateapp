@@ -46,6 +46,9 @@
     },
     "api/debug/route-audit.js": {
       "maxDuration": 5
+    },
+    "api/site/home.js": {
+      "maxDuration": 10
     }
   },
   "headers": [
@@ -250,6 +253,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api/site/home"
+    },
     {
       "source": "/api/demo/access",
       "destination": "/api/demo/access"

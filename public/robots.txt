@@ -1,17 +1,3 @@
 User-agent: *
 Allow: /
-
-# Demo pages
-Allow: /api/demo/static
-Allow: /api/demo/access
-
-# Static assets
-Allow: /og-image.png
-Allow: /og-image.svg
-Allow: /favicon.ico
-
-# Sitemap
 Sitemap: https://theflowstateapp.com/sitemap.xml
-
-# Crawl delay
-Crawl-delay: 1
