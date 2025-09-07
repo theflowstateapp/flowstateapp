@@ -57,15 +57,22 @@ app.get('/api/ai/status', (req, res) => {
 });
 
 // Demo routes
+console.log('About to load demo routes...');
 try {
+  console.log('Loading demo routes module...');
   const demoRoutes = require('./demoRoutes');
+  console.log('Demo routes module loaded, type:', typeof demoRoutes);
   app.use('/api/demo', demoRoutes);
-  console.log('Demo routes loaded successfully');
+  console.log('Demo routes mounted successfully');
 } catch (error) {
   console.error('Error loading demo routes:', error);
-  // Fallback demo route
+  console.error('Error stack:', error.stack);
+  // Fallback demo routes
   app.get('/api/demo/index', (req, res) => {
     res.status(200).json({ message: 'Demo overview working (fallback)', error: error.message });
+  });
+  app.get('/api/demo/test', (req, res) => {
+    res.status(200).json({ message: 'Demo test working (fallback)', error: error.message });
   });
 }
 
