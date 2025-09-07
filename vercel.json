@@ -59,6 +59,9 @@
     },
     "api/site/home.js": {
       "maxDuration": 10
+    },
+    "api/test.js": {
+      "maxDuration": 5
     }
   },
   "headers": [
