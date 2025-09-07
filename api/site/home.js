@@ -1,16 +1,9 @@
-// Force Node.js runtime and avoid static optimization
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
-// Vercel node function config (helps with recognition + region)
-export const config = { runtime: "nodejs", maxDuration: 10, regions: ["bom1"] };
-
 // bump this string each commit (or set via env in CI)
 const BUILD_ID = process.env.SITE_BUILD_ID || new Date().toISOString();
 
 export default async function handler(req, res) {
   try {
-    if (req.method !== "GET") {
+    if (req.method !== "GET" && req.method !== "POST" && req.method !== "OPTIONS") {
       return res.status(405).json({ ok: false, error: "Method Not Allowed" });
     }
 

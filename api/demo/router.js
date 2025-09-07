@@ -1,7 +1,3 @@
-// Force Node.js runtime and avoid static optimization
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 import { 
   renderDemoOverviewHTML, 
   renderDemoTasksHTML, 
@@ -14,7 +10,7 @@ import {
 
 export default async function handler(req, res) {
   try {
-    if (req.method !== "GET") {
+    if (req.method !== "GET" && req.method !== "POST" && req.method !== "OPTIONS") {
       return res.status(405).json({ ok: false, error: "Method Not Allowed" });
     }
 

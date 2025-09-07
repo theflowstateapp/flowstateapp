@@ -1,12 +1,14 @@
-// Force Node.js runtime and avoid static optimization
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 import { supabaseAdmin } from '../../lib/supabase.js';
 import { withDbRetry } from '../../lib/retry.js';
 
 export default async function handler(req, res) {
-  res.setHeader('Content-Type', 'application/json');
+  try {
+    if (req.method !== "GET" && req.method !== "POST" && req.method !== "OPTIONS") {
+      return res.status(405).json({ ok: false, error: "Method Not Allowed" });
+    }
+    
+    res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
   
@@ -47,5 +49,8 @@ export default async function handler(req, res) {
     out.workspaces = `error: ${e.message || e}`;
   }
 
-  res.status(200).json(out);
+    res.status(200).json(out);
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: String(e?.message || e) });
+  }
 }
