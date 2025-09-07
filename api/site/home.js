@@ -2,6 +2,12 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Vercel node function config (helps with recognition + region)
+export const config = { runtime: "nodejs18.x", maxDuration: 10, regions: ["bom1"] };
+
+// bump this string each commit (or set via env in CI)
+const BUILD_ID = process.env.SITE_BUILD_ID || new Date().toISOString();
+
 export default async function handler(req, res) {
   try {
     if (req.method !== "GET") {
@@ -12,6 +18,8 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.setHeader('X-Robots-Tag', 'index,follow');
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader("X-Site-Build", BUILD_ID);
+    res.setHeader("X-Cache-Buster", BUILD_ID);
 
     // Check if this is a demo route
     if (req.query.route === 'demo') {
@@ -38,6 +46,7 @@ export default async function handler(req, res) {
     <p>Query parameters: route=${req.query.route}, page=${req.query.page}</p>
     <a href="/api/demo/access" class="cta-button">Open Interactive Demo</a>
     <a href="/api/demo/static" class="cta-button">See Static Preview</a>
+    <small style="display: block; margin-top: 20px; color: #64748b;">Build: ${BUILD_ID}</small>
 </body>
 </html>`;
       
@@ -661,6 +670,7 @@ export default async function handler(req, res) {
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 FlowState. All rights reserved.</p>
+                <small style="color: #94a3b8;">Build: ${BUILD_ID}</small>
             </div>
         </div>
     </footer>
