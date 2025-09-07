@@ -1,3 +1,7 @@
+// Force Node.js runtime and avoid static optimization
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export default async function handler(req, res) {
   try {
     if (req.method !== "GET") {
