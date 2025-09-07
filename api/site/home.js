@@ -19,32 +19,73 @@ export default async function handler(req, res) {
     if (req.query.route === 'demo') {
       const page = (req.query.page || "overview").toString();
       
-      // Simple test HTML for demo pages
-      const demoHtml = `<!DOCTYPE html>
+      try {
+        // Import demo page renderers
+        const { 
+          renderDemoOverviewHTML,
+          renderDemoTasksHTML,
+          renderDemoHabitsHTML,
+          renderDemoJournalHTML,
+          renderDemoReviewHTML,
+          renderDemoAgendaHTML,
+          renderDemoSettingsHTML
+        } = await import('../lib/demo-pages.js');
+        
+        let html;
+        switch (page) {
+          case "overview":
+            html = await renderDemoOverviewHTML();
+            break;
+          case "tasks":
+            html = await renderDemoTasksHTML();
+            break;
+          case "habits":
+            html = await renderDemoHabitsHTML();
+            break;
+          case "journal":
+            html = await renderDemoJournalHTML();
+            break;
+          case "review":
+            html = await renderDemoReviewHTML();
+            break;
+          case "agenda":
+            html = await renderDemoAgendaHTML();
+            break;
+          case "settings":
+            html = await renderDemoSettingsHTML();
+            break;
+          default:
+            html = await renderDemoOverviewHTML();
+            break;
+        }
+        
+        return res.status(200).send(html);
+      } catch (error) {
+        console.error('DEMO_ROUTER: Error rendering demo page:', error);
+        const fallbackHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo ${page} - FlowState</title>
+    <title>Demo Temporarily Unavailable - FlowState</title>
     <style>
         body { font-family: system-ui; padding: 40px; max-width: 600px; margin: 0 auto; text-align: center; }
-        .success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 20px; border-radius: 8px; margin: 20px 0; }
         .cta-button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 10px; }
     </style>
 </head>
 <body>
-    <h1>Demo ${page} Page</h1>
-    <div class="success">
-        <strong>Success!</strong> This is the ${page} demo page served from /api/site/home
+    <h1>Demo Temporarily Unavailable</h1>
+    <div class="error">
+        <strong>Error:</strong> We're experiencing technical difficulties. Please try again in a moment.
     </div>
-    <p>Query parameters: route=${req.query.route}, page=${req.query.page}</p>
     <a href="/api/demo/access" class="cta-button">Open Interactive Demo</a>
     <a href="/api/demo/static" class="cta-button">See Static Preview</a>
     <small style="display: block; margin-top: 20px; color: #64748b;">Build: ${BUILD_ID}</small>
 </body>
 </html>`;
-      
-      return res.status(200).send(demoHtml);
+        return res.status(200).send(fallbackHtml);
+      }
     }
 
     // Default: Return the marketing homepage HTML
