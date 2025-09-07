@@ -57,8 +57,17 @@ app.get('/api/ai/status', (req, res) => {
 });
 
 // Demo routes
-const demoRoutes = require('./demoRoutes');
-app.use('/api/demo', demoRoutes);
+try {
+  const demoRoutes = require('./demoRoutes');
+  app.use('/api/demo', demoRoutes);
+  console.log('Demo routes loaded successfully');
+} catch (error) {
+  console.error('Error loading demo routes:', error);
+  // Fallback demo route
+  app.get('/api/demo/index', (req, res) => {
+    res.status(200).json({ message: 'Demo overview working (fallback)', error: error.message });
+  });
+}
 
 // Catch-all for undefined routes
 app.use('/api/*', (req, res) => {
