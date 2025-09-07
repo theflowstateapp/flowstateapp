@@ -1,21 +1,17 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build",
-  "routes": [
-    { "src": "^/$",                 "dest": "/api/site/home" },
-
-    { "src": "^/demo$",             "dest": "/api/site/home?route=demo&page=overview" },
-    { "src": "^/demo/$",            "dest": "/api/site/home?route=demo&page=overview" },
-    { "src": "^/demo/tasks$",       "dest": "/api/site/home?route=demo&page=tasks" },
-    { "src": "^/demo/habits$",      "dest": "/api/site/home?route=demo&page=habits" },
-    { "src": "^/demo/journal$",     "dest": "/api/site/home?route=demo&page=journal" },
-    { "src": "^/demo/review$",      "dest": "/api/site/home?route=demo&page=review" },
-    { "src": "^/demo/agenda$",      "dest": "/api/site/home?route=demo&page=agenda" },
-    { "src": "^/demo/settings$",    "dest": "/api/site/home?route=demo&page=settings" },
-
-    { "src": "^/demo/calendar$",    "dest": "/api/site/home?route=demo&page=agenda" },
-
-    { "src": "^/api/(.*)$",         "dest": "/api/$1" }
+  "rewrites": [
+    { "source": "/", "destination": "/api/site/home" },
+    { "source": "/demo", "destination": "/api/site/home?route=demo&page=overview" },
+    { "source": "/demo/", "destination": "/api/site/home?route=demo&page=overview" },
+    { "source": "/demo/tasks", "destination": "/api/site/home?route=demo&page=tasks" },
+    { "source": "/demo/habits", "destination": "/api/site/home?route=demo&page=habits" },
+    { "source": "/demo/journal", "destination": "/api/site/home?route=demo&page=journal" },
+    { "source": "/demo/review", "destination": "/api/site/home?route=demo&page=review" },
+    { "source": "/demo/agenda", "destination": "/api/site/home?route=demo&page=agenda" },
+    { "source": "/demo/settings", "destination": "/api/site/home?route=demo&page=settings" },
+    { "source": "/demo/calendar", "destination": "/api/site/home?route=demo&page=agenda" }
   ],
   "headers": [
     {
