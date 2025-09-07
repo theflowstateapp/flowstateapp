@@ -14,56 +14,6 @@
     { "src": "^/demo/calendar$", "dest": "/api/demo/calendar" },
     { "src": "/api/(.*)", "dest": "/api/$1" }
   ],
-  "functions": {
-    "api/demo/access.js": {
-      "maxDuration": 10
-    },
-    "api/demo/exchange.js": {
-      "maxDuration": 10
-    },
-    "api/demo/static.js": {
-      "maxDuration": 15
-    },
-    "api/demo/index.js": {
-      "maxDuration": 15
-    },
-    "api/demo/test.js": {
-      "maxDuration": 10
-    },
-    "api/demo/overview.js": {
-      "maxDuration": 10
-    },
-    "api/demo/diag.js": {
-      "maxDuration": 10
-    },
-    "api/demo/test-supabase.js": {
-      "maxDuration": 10
-    },
-    "api/demo/habits.js": {
-      "maxDuration": 10
-    },
-    "api/demo/calendar.js": {
-      "maxDuration": 10
-    },
-    "api/review/plan-next-week.js": {
-      "maxDuration": 15
-    },
-    "api/health.js": {
-      "maxDuration": 5
-    },
-    "api/debug/routes.js": {
-      "maxDuration": 5
-    },
-    "api/debug/route-audit.js": {
-      "maxDuration": 5
-    },
-    "api/site/home.js": {
-      "maxDuration": 10
-    },
-    "api/test.js": {
-      "maxDuration": 5
-    }
-  },
   "headers": [
     {
       "source": "/api/demo/access",
