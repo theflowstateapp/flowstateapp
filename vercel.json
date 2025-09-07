@@ -2,6 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "routes": [
+    { "src": "^/$", "dest": "/api/site/home" },
     { "src": "/api/(.*)", "dest": "/api/$1" }
   ],
   "functions": {
