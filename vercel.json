@@ -2,17 +2,22 @@
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "routes": [
-    { "src": "^/$", "dest": "/api/site/home" },
-    { "src": "^/demo$", "dest": "/api/demo/index" },
-    { "src": "^/demo/$", "dest": "/api/demo/index" },
-    { "src": "^/demo/tasks$", "dest": "/api/demo/tasks" },
-    { "src": "^/demo/habits$", "dest": "/api/demo/habits" },
-    { "src": "^/demo/journal$", "dest": "/api/demo/journal" },
-    { "src": "^/demo/review$", "dest": "/api/demo/review" },
-    { "src": "^/demo/agenda$", "dest": "/api/demo/agenda" },
-    { "src": "^/demo/settings$", "dest": "/api/demo/settings" },
-    { "src": "^/demo/calendar$", "dest": "/api/demo/calendar" },
-    { "src": "/api/(.*)", "dest": "/api/$1" }
+    { "src": "^/$",                 "dest": "/api/site/home" },
+
+    { "src": "^/demo$",             "dest": "/api/demo/router?page=overview" },
+    { "src": "^/demo/$",            "dest": "/api/demo/router?page=overview" },
+    { "src": "^/demo/tasks$",       "dest": "/api/demo/router?page=tasks" },
+    { "src": "^/demo/habits$",      "dest": "/api/demo/router?page=habits" },
+    { "src": "^/demo/journal$",      "dest": "/api/demo/router?page=journal" },
+    { "src": "^/demo/review$",      "dest": "/api/demo/router?page=review" },
+    { "src": "^/demo/agenda$",      "dest": "/api/demo/router?page=agenda" },
+    { "src": "^/demo/settings$",    "dest": "/api/demo/router?page=settings" },
+
+    // Any accidental /demo/calendar → route to agenda
+    { "src": "^/demo/calendar$",    "dest": "/api/demo/router?page=agenda" },
+
+    // API pass-through
+    { "src": "^/api/(.*)$",         "dest": "/api/$1" }
   ],
   "headers": [
     {
