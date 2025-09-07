@@ -4,19 +4,17 @@
   "routes": [
     { "src": "^/$",                 "dest": "/api/site/home" },
 
-    { "src": "^/demo$",             "dest": "/api/demo/router?page=overview" },
-    { "src": "^/demo/$",            "dest": "/api/demo/router?page=overview" },
-    { "src": "^/demo/tasks$",       "dest": "/api/demo/router?page=tasks" },
-    { "src": "^/demo/habits$",      "dest": "/api/demo/router?page=habits" },
-    { "src": "^/demo/journal$",      "dest": "/api/demo/router?page=journal" },
-    { "src": "^/demo/review$",      "dest": "/api/demo/router?page=review" },
-    { "src": "^/demo/agenda$",      "dest": "/api/demo/router?page=agenda" },
-    { "src": "^/demo/settings$",    "dest": "/api/demo/router?page=settings" },
+    { "src": "^/demo$",             "dest": "/api/site/home?route=demo&page=overview" },
+    { "src": "^/demo/$",            "dest": "/api/site/home?route=demo&page=overview" },
+    { "src": "^/demo/tasks$",       "dest": "/api/site/home?route=demo&page=tasks" },
+    { "src": "^/demo/habits$",      "dest": "/api/site/home?route=demo&page=habits" },
+    { "src": "^/demo/journal$",     "dest": "/api/site/home?route=demo&page=journal" },
+    { "src": "^/demo/review$",      "dest": "/api/site/home?route=demo&page=review" },
+    { "src": "^/demo/agenda$",      "dest": "/api/site/home?route=demo&page=agenda" },
+    { "src": "^/demo/settings$",    "dest": "/api/site/home?route=demo&page=settings" },
 
-    // Any accidental /demo/calendar → route to agenda
-    { "src": "^/demo/calendar$",    "dest": "/api/demo/router?page=agenda" },
+    { "src": "^/demo/calendar$",    "dest": "/api/site/home?route=demo&page=agenda" },
 
-    // API pass-through
     { "src": "^/api/(.*)$",         "dest": "/api/$1" }
   ],
   "headers": [
