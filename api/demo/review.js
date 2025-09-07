@@ -103,18 +103,22 @@ export default async function handler(req, res) {
         </div>
       </div>
 
-      <h2>📋 Plan Next Week</h2>
+      <h2>📅 Plan next week</h2>
       <div class="card">
         <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 4px;">
-          <h3 style="margin-top: 0;">Priority Focus Areas</h3>
-          <ul>
-            <li><strong>High Priority:</strong> Complete carry-over tasks from this week</li>
-            <li><strong>Deep Work:</strong> Schedule 2-hour blocks for complex projects</li>
-            <li><strong>Team Collaboration:</strong> Plan regular check-ins and reviews</li>
-            <li><strong>Personal Development:</strong> Allocate time for skill building</li>
+          <p style="margin-bottom: 10px;">
+            <strong>Auto time-boxing:</strong> In the live app, this converts carry-overs and priorities into concrete time blocks for next week (Mon–Sun, IST).
+          </p>
+          <p style="margin-bottom: 10px;">
+            <strong>Strategy options:</strong>
+          </p>
+          <ul style="margin-left: 20px; margin-bottom: 10px;">
+            <li><strong>Balanced:</strong> Spread tasks across the week</li>
+            <li><strong>Frontload:</strong> Prefer Monday-Wednesday slots</li>
+            <li><strong>Mornings:</strong> Prefer 9:30 AM - 12:30 PM slots</li>
           </ul>
-          <p style="margin-bottom: 0; color: #64748b;">
-            <strong>Note:</strong> Interactive app converts these priorities into scheduled time blocks automatically.
+          <p style="margin-bottom: 0; color: #64748b; font-size: 0.9rem;">
+            Would schedule ${carryOverTasks.length} carry-overs and ${Math.min(5, carryOverTasks.length + 3)} high-priority tasks.
           </p>
         </div>
       </div>

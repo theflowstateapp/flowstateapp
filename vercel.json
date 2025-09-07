@@ -29,6 +29,15 @@
     "api/demo/test-supabase.js": {
       "maxDuration": 10
     },
+    "api/demo/habits.js": {
+      "maxDuration": 10
+    },
+    "api/demo/calendar.js": {
+      "maxDuration": 10
+    },
+    "api/review/plan-next-week.js": {
+      "maxDuration": 15
+    },
     "api/health.js": {
       "maxDuration": 5
     },
@@ -277,6 +286,14 @@
     {
       "source": "/demo/settings",
       "destination": "/api/demo/settings"
+    },
+    {
+      "source": "/demo/habits",
+      "destination": "/api/demo/habits"
+    },
+    {
+      "source": "/demo/calendar",
+      "destination": "/api/demo/calendar"
     }
   ]
 }
