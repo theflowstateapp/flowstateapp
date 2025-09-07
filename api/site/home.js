@@ -21,6 +21,7 @@ export default async function handler(req, res) {
       
       try {
         // Import demo page renderers
+        const demoPages = await import('../lib/demo-pages.js');
         const { 
           renderDemoOverviewHTML,
           renderDemoTasksHTML,
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
           renderDemoReviewHTML,
           renderDemoAgendaHTML,
           renderDemoSettingsHTML
-        } = await import('../lib/demo-pages.js');
+        } = demoPages;
         
         let html;
         switch (page) {
