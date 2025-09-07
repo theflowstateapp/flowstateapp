@@ -1,3 +1,7 @@
+// Force Node.js runtime and avoid static optimization
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import { createClient } from '@supabase/supabase-js';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc, format as fmt } from 'date-fns-tz';

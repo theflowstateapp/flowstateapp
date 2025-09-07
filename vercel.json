@@ -1,6 +1,9 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build",
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" }
+  ],
   "functions": {
     "api/demo/access.js": {
       "maxDuration": 10
@@ -10,6 +13,21 @@
     },
     "api/demo/static.js": {
       "maxDuration": 15
+    },
+    "api/demo/index.js": {
+      "maxDuration": 15
+    },
+    "api/demo/test.js": {
+      "maxDuration": 10
+    },
+    "api/demo/overview.js": {
+      "maxDuration": 10
+    },
+    "api/health.js": {
+      "maxDuration": 5
+    },
+    "api/debug/routes.js": {
+      "maxDuration": 5
     }
   },
   "headers": [
