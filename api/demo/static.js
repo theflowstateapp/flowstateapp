@@ -2,23 +2,12 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-import { createClient } from '@supabase/supabase-js';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek } from 'date-fns';
 import { utcToZonedTime, zonedTimeToUtc, format as fmt } from 'date-fns-tz';
+import { supabaseAdmin } from '../../lib/supabase.js';
+import { withDbRetry } from '../../lib/retry.js';
 
 const IST = "Asia/Kolkata";
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
 
 // Utility functions
 const escapeHtml = (str) => {
@@ -55,13 +44,19 @@ const clipDurationMs = (a, b, x, y) => {
 // Data fetching functions
 const getDemoWorkspace = async () => {
   try {
-    const { data } = await supabase
-      .from('workspaces')
-      .select('*')
-      .eq('is_demo', true)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+    const sb = supabaseAdmin();
+    const { data } = await withDbRetry(async () => {
+      const result = await sb
+        .from('workspaces')
+        .select('*')
+        .eq('is_demo', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (result.error) throw result.error;
+      return result.data;
+    });
     
     return data;
   } catch (error) {
@@ -72,27 +67,40 @@ const getDemoWorkspace = async () => {
 
 const getCountsConsistent = async (workspaceId, reference) => {
   try {
+    const sb = supabaseAdmin();
     const { weekStartUTC, weekEndUTC } = getISTWeekBounds(reference);
     
     const [totalTasksResult, completedThisWeekResult, activeProjectsResult] = await Promise.all([
-      supabase
-        .from('tasks')
-        .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', workspaceId),
+      withDbRetry(async () => {
+        const result = await sb
+          .from('tasks')
+          .select('*', { count: 'exact', head: true })
+          .eq('workspace_id', workspaceId);
+        if (result.error) throw result.error;
+        return result;
+      }),
       
-      supabase
-        .from('tasks')
-        .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', workspaceId)
-        .eq('status', 'Done')
-        .gte('updated_at', weekStartUTC.toISOString())
-        .lte('updated_at', weekEndUTC.toISOString()),
+      withDbRetry(async () => {
+        const result = await sb
+          .from('tasks')
+          .select('*', { count: 'exact', head: true })
+          .eq('workspace_id', workspaceId)
+          .eq('status', 'Done')
+          .gte('updated_at', weekStartUTC.toISOString())
+          .lte('updated_at', weekEndUTC.toISOString());
+        if (result.error) throw result.error;
+        return result;
+      }),
       
-      supabase
-        .from('projects')
-        .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', workspaceId)
-        .neq('status', 'Completed')
+      withDbRetry(async () => {
+        const result = await sb
+          .from('projects')
+          .select('*', { count: 'exact', head: true })
+          .eq('workspace_id', workspaceId)
+          .neq('status', 'Completed');
+        if (result.error) throw result.error;
+        return result;
+      })
     ]);
 
     return {
@@ -112,17 +120,22 @@ const getCountsConsistent = async (workspaceId, reference) => {
 
 const getScheduledTotalsForWeek = async (workspaceId, reference) => {
   try {
+    const sb = supabaseAdmin();
     const { weekStartUTC, weekEndUTC } = getISTWeekBounds(reference);
 
-    // Pull only blocks overlapping week
-    const { data: tasks } = await supabase
-      .from('tasks')
-      .select('start_at, end_at, priority_matrix')
-      .eq('workspace_id', workspaceId)
-      .not('start_at', 'is', null)
-      .not('end_at', 'is', null)
-      .lte('start_at', weekEndUTC.toISOString())
-      .gte('end_at', weekStartUTC.toISOString());
+    const { data: tasks } = await withDbRetry(async () => {
+      const result = await sb
+        .from('tasks')
+        .select('start_at, end_at, priority_matrix')
+        .eq('workspace_id', workspaceId)
+        .not('start_at', 'is', null)
+        .not('end_at', 'is', null)
+        .lte('start_at', weekEndUTC.toISOString())
+        .gte('end_at', weekStartUTC.toISOString());
+      
+      if (result.error) throw result.error;
+      return result.data;
+    });
 
     if (!tasks) return { hours: 0, count: 0 };
 
@@ -145,17 +158,22 @@ const getScheduledTotalsForWeek = async (workspaceId, reference) => {
 
 const getNextSuggestedWithProposal = async (workspaceId) => {
   try {
-    // Query for highest-priority unscheduled task
-    const { data: tasks } = await supabase
-      .from('tasks')
-      .select('id, name, priority_matrix, context, estimate_mins')
-      .eq('workspace_id', workspaceId)
-      .neq('status', 'Done')
-      .is('start_at', null)
-      .is('end_at', null)
-      .order('priority_matrix', { ascending: false })
-      .order('due_at', { ascending: true })
-      .limit(1);
+    const sb = supabaseAdmin();
+    const { data: tasks } = await withDbRetry(async () => {
+      const result = await sb
+        .from('tasks')
+        .select('id, name, priority_matrix, context, estimate_mins')
+        .eq('workspace_id', workspaceId)
+        .neq('status', 'Done')
+        .is('start_at', null)
+        .is('end_at', null)
+        .order('priority_matrix', { ascending: false })
+        .order('due_at', { ascending: true })
+        .limit(1);
+      
+      if (result.error) throw result.error;
+      return result.data;
+    });
 
     if (!tasks || tasks.length === 0) {
       return null;
