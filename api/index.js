@@ -56,6 +56,49 @@ app.get('/api/ai/status', (req, res) => {
   });
 });
 
+// Demo routes
+app.get('/api/demo/index', (req, res) => {
+  res.status(200).json({ message: 'Demo overview working via Express' });
+});
+
+app.get('/api/demo/static', (req, res) => {
+  const today = new Date().toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    timeZone: 'Asia/Kolkata'
+  });
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowState Demo - AI-Powered Productivity Platform</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      .container { max-width: 800px; margin: 0 auto; }
+      h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FlowState Demo</h1>
+        <p>A snapshot of your productivity on <strong>${today}</strong>.</p>
+        <p>This is working via the Express router!</p>
+        <a href="/api/demo/access">Open Interactive Demo</a>
+    </div>
+</body>
+</html>`;
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=300');
+  res.setHeader('X-Robots-Tag', 'index,follow');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.status(200).send(html);
+});
+
 // Catch-all for undefined routes
 app.use('/api/*', (req, res) => {
   res.status(404).json({
