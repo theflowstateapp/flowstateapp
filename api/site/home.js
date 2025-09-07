@@ -11,6 +11,7 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.setHeader('X-Robots-Tag', 'index,follow');
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader("X-Served-By", "site-router");
     res.setHeader("X-Site-Build", BUILD_ID);
     res.setHeader("X-Cache-Buster", BUILD_ID);
 

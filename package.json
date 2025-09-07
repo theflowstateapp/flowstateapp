@@ -70,7 +70,7 @@
     "build:vercel": "vercel build --yes",
     "inspect:functions": "node scripts/inspect-vercel-output.js",
     "vercel:pull": "vercel pull --yes --environment=production",
-    "vercel:build": "vercel build --prod --yes",
+    "vercel:build": "rimraf .vercel && vercel build --prod --yes",
     "vercel:deploy": "vercel deploy --prebuilt --prod --yes",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,md}",
     "type-check": "tsc --noEmit",

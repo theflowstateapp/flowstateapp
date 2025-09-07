@@ -1,21 +1,19 @@
 {
   "version": 2,
   "framework": null,
-  "buildCommand": null,
-  "outputDirectory": null,
   "rewrites": [
-    { "source": "/",                 "destination": "/api/site/home" },
+    { "source": "/", "destination": "/api/site/home" },
 
-    { "source": "/demo",             "destination": "/api/site/home?route=demo&page=overview" },
-    { "source": "/demo/",            "destination": "/api/site/home?route=demo&page=overview" },
-    { "source": "/demo/tasks",       "destination": "/api/site/home?route=demo&page=tasks" },
-    { "source": "/demo/habits",      "destination": "/api/site/home?route=demo&page=habits" },
-    { "source": "/demo/journal",     "destination": "/api/site/home?route=demo&page=journal" },
-    { "source": "/demo/review",      "destination": "/api/site/home?route=demo&page=review" },
-    { "source": "/demo/agenda",      "destination": "/api/site/home?route=demo&page=agenda" },
-    { "source": "/demo/settings",    "destination": "/api/site/home?route=demo&page=settings" },
-    { "source": "/demo/calendar",    "destination": "/api/site/home?route=demo&page=agenda" },
+    { "source": "/demo",            "destination": "/api/site/home?route=demo&page=overview" },
+    { "source": "/demo/",           "destination": "/api/site/home?route=demo&page=overview" },
+    { "source": "/demo/tasks",      "destination": "/api/site/home?route=demo&page=tasks" },
+    { "source": "/demo/habits",     "destination": "/api/site/home?route=demo&page=habits" },
+    { "source": "/demo/journal",    "destination": "/api/site/home?route=demo&page=journal" },
+    { "source": "/demo/review",     "destination": "/api/site/home?route=demo&page=review" },
+    { "source": "/demo/agenda",     "destination": "/api/site/home?route=demo&page=agenda" },
+    { "source": "/demo/settings",   "destination": "/api/site/home?route=demo&page=settings" },
+    { "source": "/demo/calendar",   "destination": "/api/site/home?route=demo&page=agenda" },
 
-    { "source": "/api/(.*)",         "destination": "/api/$1" }
+    { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
 }
