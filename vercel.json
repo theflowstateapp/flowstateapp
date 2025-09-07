@@ -43,6 +43,9 @@
     },
     "api/debug/routes.js": {
       "maxDuration": 5
+    },
+    "api/debug/route-audit.js": {
+      "maxDuration": 5
     }
   },
   "headers": [

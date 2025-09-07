@@ -1,7 +1,3 @@
-// Force Node.js runtime and avoid static optimization
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 import { supabaseAdmin } from '../../lib/supabase.js';
 import { withDbRetry } from '../../lib/retry.js';
 import { getISTWeekBounds, formatISTRange } from '../../lib/time-ist.js';
@@ -56,11 +52,10 @@ const proposeTimeBlocks = (task, strategy = 'balanced', maxBlocksPerDay = 3) => 
 };
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
   try {
+    if (req.method !== 'POST') {
+      return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
+    }
     const { strategy = 'balanced', maxBlocksPerDay = 3 } = req.body;
     const workspaceId = req.headers['x-workspace-id'] || 'demo-workspace-1';
     
@@ -174,8 +169,8 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error planning next week:', error);
     res.status(500).json({
-      success: false,
-      error: error.message
+      ok: false,
+      error: String(error?.message || error)
     });
   }
 }

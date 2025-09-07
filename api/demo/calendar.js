@@ -6,6 +6,10 @@ import { withDbRetry } from '../../lib/retry.js';
 
 export default async function handler(req, res) {
   try {
+    if (req.method !== "GET") {
+      return res.status(405).json({ ok: false, error: "Method Not Allowed" });
+    }
+
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.setHeader('X-Robots-Tag', 'index,follow');
@@ -199,18 +203,27 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('DEMO_CALENDAR: Error generating calendar page:', error);
+    
+    // Robust HTML fallback
+    const fallbackHtml = DemoLayout({
+      children: `
+        <div style="text-align: center; padding: 40px;">
+          <h1>Demo Temporarily Unavailable</h1>
+          <p>We're experiencing technical difficulties. Please try the interactive demo:</p>
+          <a href="/api/demo/access" class="cta-button">Open Interactive Demo →</a>
+          <p style="margin-top: 20px; color: #64748b; font-size: 0.9rem;">
+            Error: ${escapeHtml(String(error?.message || error))}
+          </p>
+        </div>
+      `,
+      title: 'Calendar Demo - Error',
+      description: 'FlowState calendar demo - temporarily unavailable'
+    });
+    
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.setHeader('X-Robots-Tag', 'index,follow');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(500).send(`
-      <html>
-        <head><title>FlowState Demo - Error</title></head>
-        <body>
-          <h1>Demo temporarily unavailable</h1>
-          <p>Please try the interactive demo: <a href="/api/demo/access">Open Demo →</a></p>
-        </body>
-      </html>
-    `);
+    res.status(500).send(fallbackHtml);
   }
 }
