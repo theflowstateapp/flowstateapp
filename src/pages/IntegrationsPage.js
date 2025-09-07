@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 import {
   Calendar,
   Mail,
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 
 const IntegrationsPage = () => {
+  const { user, loading: authLoading } = useAuth();
   const [integrations, setIntegrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,24 +31,68 @@ const IntegrationsPage = () => {
 
   // Fetch integrations on component mount
   useEffect(() => {
-    fetchIntegrations();
-    
-    // Listen for OAuth callback messages
-    const handleOAuthMessage = (event) => {
-      if (event.data.type === 'GOOGLE_OAUTH_SUCCESS') {
-        alert(event.data.data.message);
-        fetchIntegrations(); // Refresh the list
-      } else if (event.data.type === 'GOOGLE_OAUTH_ERROR') {
-        alert(`OAuth Error: ${event.data.data.error}`);
-      }
-    };
+    // Only fetch integrations if user is authenticated
+    if (user) {
+      fetchIntegrations();
+      
+      // Listen for OAuth callback messages
+      const handleOAuthMessage = (event) => {
+        if (event.data.type === 'GOOGLE_OAUTH_SUCCESS') {
+          alert(event.data.data.message);
+          fetchIntegrations(); // Refresh the list
+        } else if (event.data.type === 'GOOGLE_OAUTH_ERROR') {
+          alert(`OAuth Error: ${event.data.data.error}`);
+        }
+      };
 
-    window.addEventListener('message', handleOAuthMessage);
-    
-    return () => {
-      window.removeEventListener('message', handleOAuthMessage);
-    };
-  }, []);
+      window.addEventListener('message', handleOAuthMessage);
+      
+      return () => {
+        window.removeEventListener('message', handleOAuthMessage);
+      };
+    }
+  }, [user]);
+
+  // Show loading while authentication is being checked
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-600 mb-6">
+            You need to be logged in to access integrations. Please log in to continue.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => window.location.href = '/login'}
+              className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Go to Login
+            </button>
+            <button
+              onClick={() => window.location.href = '/register'}
+              className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Create Account
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const fetchIntegrations = async () => {
     try {
@@ -75,7 +121,7 @@ const IntegrationsPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: 'current-user' // In real app, get from auth context
+          userId: user.id // Use actual user ID from auth context
         })
       });
 

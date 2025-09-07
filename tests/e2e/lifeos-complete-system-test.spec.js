@@ -47,7 +47,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
   test.describe('User Authentication', () => {
     test('should allow user registration', async ({ page }) => {
       // Click on sign up button
-      await page.click('text=Sign Up');
+      await page.click('text=Start Free Trial');
       
       // Fill registration form
       await page.fill('input[name="email"]', testUser.email);
@@ -66,7 +66,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
 
     test('should allow user login', async ({ page }) => {
       // Click on login button
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       
       // Fill login form
       await page.fill('input[name="email"]', testUser.email);
@@ -84,7 +84,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
 
     test('should allow user logout', async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -100,7 +100,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
   test.describe('Goals Management', () => {
     test.beforeEach(async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -159,7 +159,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
   test.describe('Projects Management', () => {
     test.beforeEach(async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -226,7 +226,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
   test.describe('Habits Management', () => {
     test.beforeEach(async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -280,7 +280,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
   test.describe('Data Relationships', () => {
     test.beforeEach(async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -331,7 +331,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
   test.describe('AI Integration', () => {
     test.beforeEach(async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -423,7 +423,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
 
     test('should show current plan in settings', async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -439,7 +439,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
 
     test('should show usage limits', async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -459,7 +459,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
   test.describe('Cross-Functionality', () => {
     test.beforeEach(async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -513,7 +513,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
 
     test('should handle AI requests efficiently', async ({ page }) => {
       // Login first
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', testUser.email);
       await page.fill('input[name="password"]', testUser.password);
       await page.click('button[type="submit"]');
@@ -549,7 +549,7 @@ test.describe('LifeOS - Core Functionality Testing', () => {
 
     test('should show user-friendly error messages', async ({ page }) => {
       // Login with invalid credentials
-      await page.click('text=Login');
+      await page.click('text=Sign In');
       await page.fill('input[name="email"]', 'invalid@email.com');
       await page.fill('input[name="password"]', 'wrongpassword');
       await page.click('button[type="submit"]');

@@ -58,12 +58,12 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
   const location = useLocation();
   const { user } = useAuth();
   const [expandedSections, setExpandedSections] = useState({
-    flow: true,
+    dashboard: true,
     capture: true,
-    process: true,
     organize: true,
+    plan: true,
+    action: true,
     review: false,
-    engage: false,
     ai: false
   });
 
@@ -74,18 +74,18 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
     }));
   };
 
-  // GTD Navigation Structure - Clean and Modern
+  // Enhanced Flow Navigation Structure - Complete Workflow
   const navigationItems = [
     {
-      section: 'flow',
-      title: 'Flow Center',
-      icon: Brain,
+      section: 'dashboard',
+      title: 'Dashboard',
+      icon: LayoutDashboard,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
       items: [
-        { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, aiPowered: true },
-        { name: 'Calendar', path: '/calendar', icon: Calendar, aiPowered: false },
-        { name: 'Analytics', path: '/analytics', icon: PieChart, aiPowered: true }
+        { name: 'Overview', path: '/dashboard', icon: LayoutDashboard, aiPowered: true },
+        { name: 'Quick Actions', path: '/quick-actions', icon: Zap, aiPowered: true },
+        { name: 'Recent Activity', path: '/recent', icon: Activity, aiPowered: true }
       ]
     },
     {
@@ -95,68 +95,78 @@ const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       color: 'text-cyan-600',
       bgColor: 'bg-cyan-50',
       items: [
-        { name: 'Inbox', path: '/inbox', icon: Inbox, aiPowered: true },
         { name: 'Quick Capture', path: '/quick-capture', icon: Plus, aiPowered: true },
-        { name: 'Voice Notes', path: '/voice-capture', icon: Mic, aiPowered: true }
-      ]
-    },
-    {
-      section: 'process',
-      title: 'Process',
-      icon: RefreshCw,
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50',
-      items: [
-        { name: 'Inbox Processing', path: '/inbox-processing', icon: RefreshCw, aiPowered: true },
-        { name: 'Review System', path: '/review', icon: CheckCircle, aiPowered: true }
+        { name: 'Voice Notes', path: '/voice-capture', icon: Mic, aiPowered: true },
+        { name: 'Email Capture', path: '/email-capture', icon: MessageSquare, aiPowered: true },
+        { name: 'Mobile Capture', path: '/mobile-capture', icon: Phone, aiPowered: true }
       ]
     },
     {
       section: 'organize',
       title: 'Organize',
-      icon: Target,
+      icon: Workflow,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50',
       items: [
-        { name: 'Projects', path: '/projects', icon: Target, aiPowered: false },
-        { name: 'Areas', path: '/areas', icon: Heart, aiPowered: false },
-        { name: 'Resources', path: '/resources', icon: BookOpen, aiPowered: false },
-        { name: 'Archives', path: '/archives', icon: Archive, aiPowered: false }
+        { name: 'Inbox Processing', path: '/inbox-processing', icon: RefreshCw, aiPowered: true },
+        { name: 'Task Management', path: '/tasks', icon: CheckCircle, aiPowered: false },
+        { name: 'Project Organization', path: '/projects', icon: Target, aiPowered: false },
+        { name: 'Resource Management', path: '/resources', icon: FileText, aiPowered: false }
+      ]
+    },
+    {
+      section: 'plan',
+      title: 'Plan',
+      icon: Target,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      items: [
+        { name: 'Project Planning', path: '/project-planning', icon: Target, aiPowered: true },
+        { name: 'Goal Setting', path: '/goals', icon: Flag, aiPowered: true },
+        { name: 'Calendar View', path: '/calendar', icon: Calendar, aiPowered: false },
+        { name: 'Time Blocking', path: '/time-blocking', icon: Clock, aiPowered: true },
+        { name: 'Priority Matrix', path: '/priority-matrix', icon: PieChart, aiPowered: true }
+      ]
+    },
+    {
+      section: 'action',
+      title: 'Take Action',
+      icon: Focus,
+      color: 'text-red-600',
+      bgColor: 'bg-red-50',
+      items: [
+        { name: 'Today\'s Focus', path: '/focus', icon: Focus, aiPowered: true },
+        { name: 'Next Actions', path: '/next-actions', icon: CheckCircle, aiPowered: true },
+        { name: 'Time Tracking', path: '/time-tracking', icon: Clock, aiPowered: false },
+        { name: 'Pomodoro Timer', path: '/pomodoro', icon: Clock, aiPowered: false },
+        { name: 'Focus Mode', path: '/focus-mode', icon: Focus, aiPowered: true }
       ]
     },
     {
       section: 'review',
       title: 'Review',
-      icon: CheckCircle,
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50',
+      icon: BarChart3,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
       items: [
-        { name: 'Weekly Review', path: '/weekly-review', icon: CheckCircle, aiPowered: true },
-        { name: 'Daily Review', path: '/daily-review', icon: Calendar, aiPowered: true },
-        { name: 'Goals Review', path: '/goals', icon: Flag, aiPowered: true }
-      ]
-    },
-    {
-      section: 'engage',
-      title: 'Engage',
-      icon: Focus,
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50',
-      items: [
-        { name: 'Next Actions', path: '/tasks', icon: CheckCircle, aiPowered: false },
-        { name: 'Waiting For', path: '/waiting', icon: Clock, aiPowered: false },
-        { name: 'Someday/Maybe', path: '/someday', icon: Star, aiPowered: false }
+        { name: 'Weekly Review', path: '/weekly-review', icon: BarChart3, aiPowered: true },
+        { name: 'Analytics Dashboard', path: '/analytics', icon: PieChart, aiPowered: true },
+        { name: 'Progress Tracking', path: '/progress', icon: TrendingUp, aiPowered: true },
+        { name: 'Habit Review', path: '/habit-review', icon: Repeat, aiPowered: true },
+        { name: 'Goal Assessment', path: '/goal-assessment', icon: Flag, aiPowered: true }
       ]
     },
     {
       section: 'ai',
       title: 'AI Assistant',
       icon: Bot,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50',
       items: [
-        { name: 'Chat Assistant', path: '/ai-assistant', icon: MessageSquare, aiPowered: true },
-        { name: 'Smart Workflows', path: '/workflows', icon: Workflow, aiPowered: true }
+        { name: 'AI Assistant', path: '/ai-assistant', icon: Bot, aiPowered: true },
+        { name: 'Smart Suggestions', path: '/suggestions', icon: Lightbulb, aiPowered: true },
+        { name: 'Content Generation', path: '/content-generation', icon: Sparkles, aiPowered: true },
+        { name: 'Automation', path: '/automation', icon: Workflow, aiPowered: true }
       ]
     }
   ];

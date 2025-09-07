@@ -1,0 +1,156 @@
+import DemoLayout from '../../lib/DemoLayout.js';
+import { escapeHtml } from '../../lib/ssrHtml.js';
+import { getDemoWorkspace } from '../../lib/demoData.js';
+import { getCompletedTasksForISTWeek, getCarryOverTasksForISTWeek } from '../../lib/demo-metrics.js';
+import { getISTWeekBounds, formatISTRange } from '../../lib/time-ist.js';
+
+export default async function handler(req, res) {
+  try {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.setHeader('X-Robots-Tag', 'index,follow');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Get demo workspace
+    const workspace = await getDemoWorkspace();
+    if (!workspace) {
+      const html = DemoLayout({
+        children: `
+          <div style="text-align: center; padding: 40px;">
+            <h1>Demo Temporarily Unavailable</h1>
+            <p>No demo workspace found. Please try the interactive demo:</p>
+            <a href="/api/demo/access" class="cta-button">Open Interactive Demo →</a>
+          </div>
+        `,
+        title: 'Review Demo',
+        description: 'FlowState review demo - temporarily unavailable'
+      });
+      return res.status(200).send(html);
+    }
+
+    // Get IST week bounds for current week
+    const { weekStartUTC, weekEndUTC } = getISTWeekBounds();
+    const weekRange = formatISTRange(weekStartUTC, weekEndUTC, false);
+
+    // Fetch review data for the IST week
+    const [completedTasks, carryOverTasks] = await Promise.all([
+      getCompletedTasksForISTWeek(workspace.id),
+      getCarryOverTasksForISTWeek(workspace.id)
+    ]);
+
+    const children = `
+      <h1>Weekly Review (Read-only Demo)</h1>
+      <p>Reflect on your week and plan ahead with intelligent insights.</p>
+
+      <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 4px; margin-bottom: 30px;">
+        <h3 style="margin-top: 0;">Period: ${weekRange.startLabel} – ${weekRange.endLabel}</h3>
+        <p style="margin-bottom: 0; color: #64748b;">All times in Asia/Kolkata timezone</p>
+      </div>
+
+      <h2>✅ Completed This Week</h2>
+      <div class="card">
+        ${completedTasks.length > 0 ? `
+          <ul>
+            ${completedTasks.slice(0, 10).map((task, index) => `
+              <li style="margin-bottom: 8px; padding: 8px; background-color: #f0fdf4; border-left: 3px solid #10B981; border-radius: 4px;">
+                <strong>${index + 1}.</strong> ${escapeHtml(task.name)}
+                <small style="color: #64748b; margin-left: 10px;">Completed ${new Date(task.updated_at).toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' })}</small>
+              </li>
+            `).join('')}
+          </ul>
+        ` : '<p>No completed tasks this week.</p>'}
+      </div>
+
+      <h2>⏳ Carry-overs</h2>
+      <div class="card">
+        ${carryOverTasks.length > 0 ? `
+          <ul>
+            ${carryOverTasks.slice(0, 10).map((task, index) => `
+              <li style="margin-bottom: 8px; padding: 8px; background-color: #fef3c7; border-left: 3px solid #F59E0B; border-radius: 4px;">
+                <strong>${index + 1}.</strong> ${escapeHtml(task.name)}
+                <small style="color: #64748b; margin-left: 10px;">Originally due ${new Date(task.do_date).toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' })}</small>
+              </li>
+            `).join('')}
+          </ul>
+        ` : '<p>No carry-over tasks. Great job staying on track!</p>'}
+      </div>
+
+      <h2>🌟 Highlights</h2>
+      <div class="card">
+        <ul>
+          <li style="margin-bottom: 8px; padding: 8px; background-color: #f3e8ff; border-left: 3px solid #7c3aed; border-radius: 4px;">
+            <strong>1.</strong> Great team collaboration on Q4 launch
+          </li>
+          <li style="margin-bottom: 8px; padding: 8px; background-color: #f3e8ff; border-left: 3px solid #7c3aed; border-radius: 4px;">
+            <strong>2.</strong> Successful AI integration testing
+          </li>
+          <li style="margin-bottom: 8px; padding: 8px; background-color: #f3e8ff; border-left: 3px solid #7c3aed; border-radius: 4px;">
+            <strong>3.</strong> Improved work-life balance this week
+          </li>
+        </ul>
+      </div>
+
+      <h2>🤖 Auto-summary</h2>
+      <div class="card">
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+          <p style="font-style: italic; color: #475569; margin-bottom: 15px;">
+            "This week showed strong productivity with ${completedTasks.length} completed tasks. 
+            The focus on high-priority items paid off, though ${carryOverTasks.length} tasks 
+            were carried over. Key highlights include improved team collaboration and successful project milestones. 
+            Next week, prioritize the carry-over tasks and maintain the current momentum."
+          </p>
+          <small style="color: #64748b;">Generated by AI analysis of your weekly data</small>
+        </div>
+      </div>
+
+      <h2>📋 Plan Next Week</h2>
+      <div class="card">
+        <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 4px;">
+          <h3 style="margin-top: 0;">Priority Focus Areas</h3>
+          <ul>
+            <li><strong>High Priority:</strong> Complete carry-over tasks from this week</li>
+            <li><strong>Deep Work:</strong> Schedule 2-hour blocks for complex projects</li>
+            <li><strong>Team Collaboration:</strong> Plan regular check-ins and reviews</li>
+            <li><strong>Personal Development:</strong> Allocate time for skill building</li>
+          </ul>
+          <p style="margin-bottom: 0; color: #64748b;">
+            <strong>Note:</strong> Interactive app converts these priorities into scheduled time blocks automatically.
+          </p>
+        </div>
+      </div>
+
+      <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 4px; margin: 20px 0;">
+        <p><strong>Note:</strong> Full review templates, goal setting, and automated scheduling available in interactive app.</p>
+      </div>
+
+      <div style="text-align: center; margin: 40px 0;">
+        <a href="/api/demo/access?utm_source=demo-review" class="cta-button">Open Interactive Demo</a>
+        <a href="/demo" class="cta-button cta-secondary">Back to Overview</a>
+      </div>
+    `;
+
+    const html = DemoLayout({
+      children,
+      title: 'Review Demo',
+      description: 'FlowState weekly review with automated insights and next week planning'
+    });
+
+    res.status(200).send(html);
+
+  } catch (error) {
+    console.error('DEMO_REVIEW: Error generating review page:', error);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.setHeader('X-Robots-Tag', 'index,follow');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(500).send(`
+      <html>
+        <head><title>FlowState Demo - Error</title></head>
+        <body>
+          <h1>Demo temporarily unavailable</h1>
+          <p>Please try the interactive demo: <a href="/api/demo/access">Open Demo →</a></p>
+        </body>
+      </html>
+    `);
+  }
+}

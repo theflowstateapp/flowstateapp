@@ -5,22 +5,24 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="FlowState - AI-powered productivity platform for peak performance using the P.A.R.A. method" />
-    <meta name="keywords" content="productivity, AI, P.A.R.A., task management, life organization" />
+    <meta name="description" content="FlowState is the ultimate AI-powered productivity platform implementing GTD methodology. Organize tasks, track habits, manage projects, and achieve peak performance with intelligent automation." />
+    <meta name="keywords" content="productivity, AI, GTD, task management, project management, habit tracking, life organization, workflow automation, Getting Things Done" />
     <meta name="author" content="FlowState App" />
+    <meta name="robots" content="index, follow" />
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="FlowState - AI-powered productivity platform" />
-    <meta property="og:description" content="Organize your life with AI-powered productivity using the P.A.R.A. method" />
+    <meta property="og:title" content="FlowState - AI-Powered Productivity Platform" />
+    <meta property="og:description" content="Transform your productivity with AI-powered task management, project tracking, and habit formation. Implement GTD methodology with intelligent automation." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://theflowstateapp.com" />
-    <meta property="og:image" content="%PUBLIC_URL%/logo512.png" />
+    <meta property="og:image" content="https://theflowstateapp.com/og-image.png" />
+    <meta property="og:site_name" content="FlowState" />
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="FlowState - AI-powered productivity platform" />
-    <meta name="twitter:description" content="Organize your life with AI-powered productivity using the P.A.R.A. method" />
-    <meta name="twitter:image" content="%PUBLIC_URL%/logo512.png" />
+    <meta name="twitter:title" content="FlowState - AI-Powered Productivity Platform" />
+    <meta name="twitter:description" content="Transform your productivity with AI-powered task management, project tracking, and habit formation." />
+    <meta name="twitter:image" content="https://theflowstateapp.com/og-image.png" />
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,10 +38,62 @@
     <meta http-equiv="X-DNS-Prefetch-Control" content="on">
     <meta name="format-detection" content="telephone=no">
     
-    <title>FlowState - AI-powered productivity platform</title>
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "FlowState",
+      "description": "AI-powered productivity platform implementing GTD methodology",
+      "url": "https://theflowstateapp.com",
+      "applicationCategory": "ProductivityApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "AI-powered task management",
+        "GTD methodology implementation", 
+        "Project tracking and collaboration",
+        "Habit formation and tracking",
+        "Journal and reflection system",
+        "Pomodoro timer and focus sessions",
+        "Integration with Google Calendar, Gmail, Apple Reminders"
+      ]
+    }
+    </script>
+    
+    <title>FlowState - AI-Powered Productivity Platform</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; text-align: center;">
+        <h1 style="color: #3B82F6; margin-bottom: 20px;">FlowState - AI-Powered Productivity Platform</h1>
+        <p style="font-size: 18px; color: #374151; margin-bottom: 30px;">
+          Transform your productivity with AI-powered task management, project tracking, and habit formation. 
+          Implement GTD methodology with intelligent automation.
+        </p>
+        <div style="background: #F3F4F6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h2 style="color: #1F2937; margin-bottom: 15px;">Key Features:</h2>
+          <ul style="text-align: left; color: #374151; line-height: 1.6;">
+            <li>AI-powered task management with GTD methodology</li>
+            <li>Project tracking and team collaboration</li>
+            <li>Habit formation and streak tracking</li>
+            <li>Journal entries with mood tracking</li>
+            <li>Pomodoro timer and focus sessions</li>
+            <li>Integration with Google Calendar, Gmail, Apple Reminders</li>
+            <li>Smart suggestions and workflow automation</li>
+          </ul>
+        </div>
+        <p style="color: #6B7280; margin-top: 30px;">
+          <strong>To use FlowState, please enable JavaScript in your browser.</strong><br>
+          <a href="https://theflowstateapp.com/api/demo/access" style="color: #3B82F6; text-decoration: none; font-weight: 500;">
+            Try our demo →</a>
+        </p>
+      </div>
+    </noscript>
     <div id="root"></div>
   </body>
 </html>

@@ -410,6 +410,13 @@ app.get('/api/payments/subscription-plans', (req, res) => {
   });
 });
 
+// Demo endpoints
+const { demoAccess, demoTokenExchange } = require('./src/controllers/demoController');
+
+app.get('/api/demo/access', demoAccess);
+app.post('/api/demo/access', demoAccess);
+app.post('/api/demo/exchange', demoTokenExchange);
+
 // Enhanced OpenAI API endpoint
 app.post('/api/openai', openaiLimiter, async (req, res) => {
   try {

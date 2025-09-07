@@ -1,0 +1,7 @@
+# Demo Configuration
+APP_DOMAIN=theflowstateapp.com
+DEMO_JWT_SECRET=FlowState_Demo_JWT_Secret_2024_Production_Ready_Change_This_Key
+DEMO_EMAIL=demo@theflowstateapp.com
+DEMO_PASSWORD=FlowStateDemo2024!
+DEMO_SESSION_DURATION=86400
+DEMO_COOKIE_DOMAIN=.theflowstateapp.com

@@ -25,6 +25,13 @@ import VoiceCapture from '../pages/VoiceCapture';
 import Notes from '../pages/Notes';
 import Calendar from '../pages/Calendar';
 import AdvancedCalendar from '../pages/AdvancedCalendar';
+import FocusPage from '../pages/FocusPage';
+import NextActionsPage from '../pages/NextActionsPage';
+import FocusModePage from '../pages/FocusModePage';
+import DemoBanner from './DemoBanner';
+import HomePage from '../pages/HomePage';
+import DashboardNew from '../pages/DashboardNew';
+import WeekAgendaPage from '../pages/WeekAgendaPage';
 // ... existing code ...
 import MainDashboard from '../pages/MainDashboard';
 import Dashboard from '../pages/Dashboard';
@@ -66,7 +73,7 @@ const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [onboardingStartTime, setOnboardingStartTime] = useState(null);
-  const { user, logout } = useAuth();
+  const { user, logout, isDemo } = useAuth();
   const navigate = useNavigate();
 
   // Check if user needs onboarding
@@ -114,6 +121,8 @@ const AppLayout = () => {
         {/* Quick Feedback */}
         <QuickFeedback />
 
+        {/* Demo Banner */}
+        <DemoBanner isDemo={isDemo} />
 
       {/* Fixed Header - Responsive */}
       <div className="fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b border-gray-200/50 z-50 flex items-center justify-between px-4 lg:px-6 shadow-sm">
@@ -203,7 +212,9 @@ const AppLayout = () => {
         <main className="h-[calc(100vh-4rem)] lg:h-screen overflow-y-auto bg-gray-50 pt-16 lg:pt-0 w-full" data-testid="main-content" data-tour="welcome">
           <ErrorBoundary>
             <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/app" element={<DashboardNew />} />
+            <Route path="/agenda" element={<WeekAgendaPage />} />
             <Route path="/main-dashboard" element={<MainDashboard />} />
             <Route path="/ai-assistant" element={<AIAssistant />} />
             <Route path="/analytics" element={<Analytics />} />
@@ -211,6 +222,11 @@ const AppLayout = () => {
             <Route path="/notes" element={<Notes />} />
             <Route path="/calendar" element={<AdvancedCalendar />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            
+            {/* Take Action Section Routes */}
+            <Route path="/focus" element={<FocusPage />} />
+            <Route path="/next-actions" element={<NextActionsPage />} />
+            <Route path="/focus-mode" element={<FocusModePage />} />
             <Route path="/task/:taskId" element={<TaskDetail />} />
             <Route path="/new-task" element={<NewTaskForm />} />
             <Route path="/new-project" element={<NewProjectForm />} />

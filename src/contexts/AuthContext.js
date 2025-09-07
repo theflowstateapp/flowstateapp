@@ -10,13 +10,62 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
+    // Check for demo mode
+    const checkDemoMode = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isDemoParam = urlParams.get('demo') === '1';
+      const demoToken = urlParams.get('demoToken');
+      const demoCookie = document.cookie.includes('demo=1');
+      
+      return isDemoParam || demoToken || demoCookie;
+    };
+
     // Get initial user
     const getInitialUser = async () => {
       try {
         // eslint-disable-next-line no-console
         console.log('AuthContext: Getting initial user...');
+        
+        // Check if we're in demo mode
+        const demoMode = checkDemoMode();
+        setIsDemo(demoMode);
+        
+        if (demoMode) {
+          // Handle demo token exchange if needed
+          const urlParams = new URLSearchParams(window.location.search);
+          const demoToken = urlParams.get('demoToken');
+          
+          if (demoToken && !document.cookie.includes('sb-access-token')) {
+            try {
+              const response = await fetch('/api/demo/exchange', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: demoToken }),
+                credentials: 'include'
+              });
+              
+              if (response.ok) {
+                // Remove demo token from URL
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.delete('demoToken');
+                window.history.replaceState({}, '', newUrl);
+                
+                // Refresh the page to pick up new cookies
+                window.location.reload();
+                return;
+              } else {
+                console.error('Demo token exchange failed:', response.status);
+              }
+            } catch (error) {
+              console.error('Demo token exchange failed:', error);
+            }
+          }
+        }
         
         // For development/testing, provide a mock user if API is not available
         try {
@@ -29,15 +78,16 @@ export const AuthProvider = ({ children }) => {
           console.log('AuthContext: API not available, using mock user for testing');
           setUser({
             id: '1',
-            email: 'user@flowstate.com',
-            firstName: 'John',
-            lastName: 'Smith',
+            email: demoMode ? 'demo@theflowstateapp.com' : 'user@flowstate.com',
+            firstName: demoMode ? 'Demo' : 'John',
+            lastName: demoMode ? 'User' : 'Smith',
             avatar: null,
             preferences: {
               theme: 'light',
               notifications: true,
               emailUpdates: true,
-              language: 'en'
+              language: 'en',
+              demo_mode: demoMode
             }
           });
         }
@@ -102,6 +152,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    isDemo,
     signUp,
     signIn,
     signOut,

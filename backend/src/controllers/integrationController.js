@@ -500,13 +500,49 @@ class IntegrationController {
   // OAuth callback handlers
   async handleGoogleCallback(req, res) {
     try {
-      const { code, state } = req.query;
+      const { code, state, error } = req.query;
+      
+      // Handle OAuth errors from Google
+      if (error) {
+        console.error('Google OAuth error:', error);
+        return res.send(`
+          <html>
+            <body>
+              <script>
+                window.opener.postMessage({
+                  type: 'GOOGLE_OAUTH_ERROR',
+                  data: {
+                    success: false,
+                    error: 'OAuth authorization failed: ${error}'
+                  }
+                }, '*');
+                window.close();
+              </script>
+              <p>OAuth authorization failed: ${error}. You can close this window.</p>
+            </body>
+          </html>
+        `);
+      }
       
       if (!code) {
-        return res.status(400).json({
-          success: false,
-          error: 'Authorization code not provided'
-        });
+        console.error('No authorization code provided');
+        return res.send(`
+          <html>
+            <body>
+              <script>
+                window.opener.postMessage({
+                  type: 'GOOGLE_OAUTH_ERROR',
+                  data: {
+                    success: false,
+                    error: 'Authorization code not provided'
+                  }
+                }, '*');
+                window.close();
+              </script>
+              <p>Authorization code not provided. You can close this window.</p>
+            </body>
+          </html>
+        `);
       }
 
       const oauth2Client = new google.auth.OAuth2(
@@ -515,8 +551,38 @@ class IntegrationController {
         process.env.GOOGLE_REDIRECT_URI
       );
 
-      // Exchange code for tokens
-      const { tokens } = await oauth2Client.getToken(code);
+      // Exchange code for tokens with better error handling
+      let tokens;
+      try {
+        const tokenResponse = await oauth2Client.getToken(code);
+        tokens = tokenResponse.tokens;
+      } catch (tokenError) {
+        console.error('Token exchange failed:', tokenError.message);
+        
+        // Handle specific OAuth errors
+        if (tokenError.message.includes('invalid_grant')) {
+          return res.send(`
+            <html>
+              <body>
+                <script>
+                  window.opener.postMessage({
+                    type: 'GOOGLE_OAUTH_ERROR',
+                    data: {
+                      success: false,
+                      error: 'Authorization code expired or invalid. Please try again.'
+                    }
+                  }, '*');
+                  window.close();
+                </script>
+                <p>Authorization code expired or invalid. Please try again. You can close this window.</p>
+              </body>
+            </html>
+          `);
+        }
+        
+        throw tokenError;
+      }
+      
       oauth2Client.setCredentials(tokens);
 
       // Get user info
