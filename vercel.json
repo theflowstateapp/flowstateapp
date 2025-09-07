@@ -22,18 +22,6 @@
     },
     "api/demo/overview.js": {
       "maxDuration": 10
-    },
-    "api/demo/diag.js": {
-      "maxDuration": 10
-    },
-    "api/demo/test-supabase.js": {
-      "maxDuration": 10
-    },
-    "api/health.js": {
-      "maxDuration": 5
-    },
-    "api/debug/routes.js": {
-      "maxDuration": 5
     }
   },
   "headers": [
@@ -277,14 +265,6 @@
     {
       "source": "/demo/settings",
       "destination": "/api/demo/settings"
-    },
-    {
-      "source": "/demo/diag",
-      "destination": "/api/demo/diag"
-    },
-    {
-      "source": "/demo/test-supabase",
-      "destination": "/api/demo/test-supabase"
     }
   ]
 }

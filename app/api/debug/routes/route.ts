@@ -1,12 +1,8 @@
-// Force Node.js runtime and avoid static optimization
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const preferredRegion = process.env.APP_PREFERRED_REGION || "bom1";
 
-export default function handler(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
+export async function GET() {
   // Expected routes based on our current API structure
   const expected = [
     "/api/health",
@@ -16,6 +12,8 @@ export default function handler(req, res) {
     "/api/demo/index",
     "/api/demo/test",
     "/api/demo/overview",
+    "/api/demo/diag",
+    "/api/demo/test-supabase",
     "/api/demo/tasks",
     "/api/demo/habits",
     "/api/demo/journal",
@@ -44,9 +42,19 @@ export default function handler(req, res) {
     "/api/notes/list"
   ];
   
-  res.status(200).json({
+  return new Response(JSON.stringify({
     expected,
     timestamp: new Date().toISOString(),
+    runtime: "nodejs",
+    dynamic: "force-dynamic",
+    region: process.env.APP_PREFERRED_REGION || "bom1",
     note: "This is a static list of expected routes. In production, this would scan the filesystem."
+  }), {
+    status: 200,
+    headers: { 
+      "content-type": "application/json",
+      "cache-control": "no-cache, no-store, must-revalidate",
+      "access-control-allow-origin": "*"
+    }
   });
 }

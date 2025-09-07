@@ -1,17 +1,14 @@
-// Force Node.js runtime and avoid static optimization
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const preferredRegion = process.env.APP_PREFERRED_REGION || "bom1";
 
-export default async function handler(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
-  const out = { 
+export async function GET() {
+  const out: any = { 
     ok: true, 
     timestamp: new Date().toISOString(),
-    runtime: 'nodejs',
-    dynamic: 'force-dynamic',
+    runtime: "nodejs",
+    dynamic: "force-dynamic",
+    region: process.env.APP_PREFERRED_REGION || "bom1",
     env: {
       hasSupabaseUrl: !!process.env.SUPABASE_URL,
       hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -53,10 +50,17 @@ export default async function handler(req, res) {
       out.sampleData = data;
     }
     
-  } catch (e) {
+  } catch (e: any) {
     out.error = e.message;
     out.stack = e.stack;
   }
 
-  res.status(200).json(out);
+  return new Response(JSON.stringify(out), {
+    status: 200,
+    headers: { 
+      "content-type": "application/json",
+      "cache-control": "no-cache, no-store, must-revalidate",
+      "access-control-allow-origin": "*"
+    }
+  });
 }

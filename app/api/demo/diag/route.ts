@@ -1,20 +1,17 @@
-// Force Node.js runtime and avoid static optimization
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const preferredRegion = process.env.APP_PREFERRED_REGION || "bom1";
 
-import { supabaseAdmin } from '../../lib/supabase.js';
-import { withDbRetry } from '../../lib/retry.js';
+import { supabaseAdmin } from '../../../lib/supabase.js';
+import { withDbRetry } from '../../../lib/retry.js';
 
-export default async function handler(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
-  const out = { 
+export async function GET() {
+  const out: any = { 
     ok: true, 
     timestamp: new Date().toISOString(),
-    runtime: 'nodejs',
-    dynamic: 'force-dynamic'
+    runtime: "nodejs",
+    dynamic: "force-dynamic",
+    region: process.env.APP_PREFERRED_REGION || "bom1"
   };
 
   try {
@@ -27,7 +24,7 @@ export default async function handler(req, res) {
     
     out.postgrest = "ok";
     out.sampleData = data;
-  } catch (e) {
+  } catch (e: any) {
     out.postgrest = `error: ${e.message || e}`;
   }
 
@@ -42,9 +39,16 @@ export default async function handler(req, res) {
     
     out.workspaces = "ok";
     out.workspaceData = data;
-  } catch (e) {
+  } catch (e: any) {
     out.workspaces = `error: ${e.message || e}`;
   }
 
-  res.status(200).json(out);
+  return new Response(JSON.stringify(out), {
+    status: 200,
+    headers: { 
+      "content-type": "application/json",
+      "cache-control": "no-cache, no-store, must-revalidate",
+      "access-control-allow-origin": "*"
+    }
+  });
 }
