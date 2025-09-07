@@ -3,6 +3,15 @@
   "outputDirectory": "build",
   "routes": [
     { "src": "^/$", "dest": "/api/site/home" },
+    { "src": "^/demo$", "dest": "/api/demo/index" },
+    { "src": "^/demo/$", "dest": "/api/demo/index" },
+    { "src": "^/demo/tasks$", "dest": "/api/demo/tasks" },
+    { "src": "^/demo/habits$", "dest": "/api/demo/habits" },
+    { "src": "^/demo/journal$", "dest": "/api/demo/journal" },
+    { "src": "^/demo/review$", "dest": "/api/demo/review" },
+    { "src": "^/demo/agenda$", "dest": "/api/demo/agenda" },
+    { "src": "^/demo/settings$", "dest": "/api/demo/settings" },
+    { "src": "^/demo/calendar$", "dest": "/api/demo/calendar" },
     { "src": "/api/(.*)", "dest": "/api/$1" }
   ],
   "functions": {
@@ -251,60 +260,6 @@
           "value": "*"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/api/site/home"
-    },
-    {
-      "source": "/api/demo/access",
-      "destination": "/api/demo/access"
-    },
-    {
-      "source": "/api/demo/exchange",
-      "destination": "/api/demo/exchange"
-    },
-    {
-      "source": "/api/demo/static",
-      "destination": "/api/demo/static"
-    },
-    {
-      "source": "/demo",
-      "destination": "/api/demo/index"
-    },
-    {
-      "source": "/demo/tasks",
-      "destination": "/api/demo/tasks"
-    },
-    {
-      "source": "/demo/habits",
-      "destination": "/api/demo/habits"
-    },
-    {
-      "source": "/demo/journal",
-      "destination": "/api/demo/journal"
-    },
-    {
-      "source": "/demo/review",
-      "destination": "/api/demo/review"
-    },
-    {
-      "source": "/demo/agenda",
-      "destination": "/api/demo/agenda"
-    },
-    {
-      "source": "/demo/settings",
-      "destination": "/api/demo/settings"
-    },
-    {
-      "source": "/demo/habits",
-      "destination": "/api/demo/habits"
-    },
-    {
-      "source": "/demo/calendar",
-      "destination": "/api/demo/calendar"
     }
   ]
 }
