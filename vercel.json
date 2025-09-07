@@ -22,6 +22,18 @@
     },
     "api/demo/overview.js": {
       "maxDuration": 10
+    },
+    "api/demo/diag.js": {
+      "maxDuration": 10
+    },
+    "api/demo/test-supabase.js": {
+      "maxDuration": 10
+    },
+    "api/health.js": {
+      "maxDuration": 5
+    },
+    "api/debug/routes.js": {
+      "maxDuration": 5
     }
   },
   "headers": [
