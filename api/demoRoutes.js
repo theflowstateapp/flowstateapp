@@ -187,6 +187,11 @@ const getNextSuggestedWithProposal = async (workspaceId) => {
 
 // Demo Routes
 
+// Test route
+router.get('/test', (req, res) => {
+  res.json({ message: 'Demo routes working!', timestamp: new Date().toISOString() });
+});
+
 // Overview page
 router.get('/index', async (req, res) => {
   try {
