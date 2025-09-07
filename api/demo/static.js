@@ -1,12 +1,218 @@
+import { createClient } from '@supabase/supabase-js';
+import { startOfDay, endOfDay, startOfWeek, endOfWeek } from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc, format as fmt } from 'date-fns-tz';
+
+const IST = "Asia/Kolkata";
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+);
+
+// Utility functions
+const escapeHtml = (str) => {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
+const getISTWeekBounds = (reference) => {
+  const now = reference ?? new Date();
+  const zonedNow = utcToZonedTime(now, IST);
+
+  // Monday-start week in IST
+  const weekStartZoned = startOfWeek(zonedNow, { weekStartsOn: 1 });
+  const weekEndZoned = endOfWeek(zonedNow, { weekStartsOn: 1 });
+
+  // Clamp to day bounds in IST, then convert to UTC for DB queries
+  const weekStartUTC = zonedTimeToUtc(startOfDay(weekStartZoned), IST);
+  const weekEndUTC = zonedTimeToUtc(endOfDay(weekEndZoned), IST);
+
+  return { zonedNow, weekStartZoned, weekEndZoned, weekStartUTC, weekEndUTC };
+};
+
+const clipDurationMs = (a, b, x, y) => {
+  const start = a > x ? a : x;
+  const end = b < y ? b : y;
+  return Math.max(0, +end - +start);
+};
+
+// Data fetching functions
+const getDemoWorkspace = async () => {
+  try {
+    const { data } = await supabase
+      .from('workspaces')
+      .select('*')
+      .eq('is_demo', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+    
+    return data;
+  } catch (error) {
+    console.warn('Could not fetch demo workspace:', error.message);
+    return { id: 'demo-workspace-1', name: 'Demo Workspace', is_demo: true };
+  }
+};
+
+const getCountsConsistent = async (workspaceId, reference) => {
+  try {
+    const { weekStartUTC, weekEndUTC } = getISTWeekBounds(reference);
+    
+    const [totalTasksResult, completedThisWeekResult, activeProjectsResult] = await Promise.all([
+      supabase
+        .from('tasks')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId),
+      
+      supabase
+        .from('tasks')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId)
+        .eq('status', 'Done')
+        .gte('updated_at', weekStartUTC.toISOString())
+        .lte('updated_at', weekEndUTC.toISOString()),
+      
+      supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId)
+        .neq('status', 'Completed')
+    ]);
+
+    return {
+      totalTasks: totalTasksResult.count || 0,
+      completedThisWeek: completedThisWeekResult.count || 0,
+      activeProjects: activeProjectsResult.count || 0
+    };
+  } catch (error) {
+    console.warn('Could not fetch counts:', error.message);
+    return {
+      totalTasks: 12,
+      completedThisWeek: 5,
+      activeProjects: 2
+    };
+  }
+};
+
+const getScheduledTotalsForWeek = async (workspaceId, reference) => {
+  try {
+    const { weekStartUTC, weekEndUTC } = getISTWeekBounds(reference);
+
+    // Pull only blocks overlapping week
+    const { data: tasks } = await supabase
+      .from('tasks')
+      .select('start_at, end_at, priority_matrix')
+      .eq('workspace_id', workspaceId)
+      .not('start_at', 'is', null)
+      .not('end_at', 'is', null)
+      .lte('start_at', weekEndUTC.toISOString())
+      .gte('end_at', weekStartUTC.toISOString());
+
+    if (!tasks) return { hours: 0, count: 0 };
+
+    // Sum clipped durations within week window
+    let totalMs = 0;
+    for (const task of tasks) {
+      if (!task.start_at || !task.end_at) continue;
+      const startAt = new Date(task.start_at);
+      const endAt = new Date(task.end_at);
+      totalMs += clipDurationMs(startAt, endAt, weekStartUTC, weekEndUTC);
+    }
+    
+    const hours = +(totalMs / (1000 * 60 * 60)).toFixed(1);
+    return { hours, count: tasks.length };
+  } catch (error) {
+    console.warn('Could not fetch scheduled totals:', error.message);
+    return { hours: 8.5, count: 6 };
+  }
+};
+
+const getNextSuggestedWithProposal = async (workspaceId) => {
+  try {
+    // Query for highest-priority unscheduled task
+    const { data: tasks } = await supabase
+      .from('tasks')
+      .select('id, name, priority_matrix, context, estimate_mins')
+      .eq('workspace_id', workspaceId)
+      .neq('status', 'Done')
+      .is('start_at', null)
+      .is('end_at', null)
+      .order('priority_matrix', { ascending: false })
+      .order('due_at', { ascending: true })
+      .limit(1);
+
+    if (!tasks || tasks.length === 0) {
+      return null;
+    }
+
+    const task = tasks[0];
+    
+    // Generate a mock proposal (in a real implementation, this would call the scheduling engine)
+    const now = new Date();
+    const proposalStart = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours from now
+    const proposalEnd = new Date(proposalStart.getTime() + (task.estimate_mins || 30) * 60 * 1000);
+    
+    return {
+      task: {
+        id: task.id,
+        name: task.name,
+        priority_matrix: task.priority_matrix,
+        context: task.context
+      },
+      proposal: {
+        start: proposalStart.toISOString(),
+        end: proposalEnd.toISOString(),
+        label: fmt(utcToZonedTime(proposalStart, IST), "EEE, h:mm a", { timeZone: IST }) + 
+               '–' + fmt(utcToZonedTime(proposalEnd, IST), "h:mm a", { timeZone: IST }),
+        rationale: 'Fits your deep work window'
+      }
+    };
+  } catch (error) {
+    console.warn('Could not fetch next suggested task:', error.message);
+    return {
+      task: {
+        id: 'demo-task-1',
+        name: 'Complete project proposal',
+        priority_matrix: 'High',
+        context: 'Deep Work'
+      },
+      proposal: {
+        start: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+        end: new Date(Date.now() + 2.75 * 60 * 60 * 1000).toISOString(),
+        label: 'Wed, 10:30–11:15',
+        rationale: 'Fits your deep work window'
+      }
+    };
+  }
+};
+
 export default async function handler(req, res) {
   try {
-    console.log('STATIC_DEMO: Starting handler');
+    console.log('DEMO_STATIC: Generating static demo page');
     
     // Set headers
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.setHeader('X-Robots-Tag', 'index,follow');
     res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Fetch data with P0 fixes
+    const workspace = await getDemoWorkspace();
+    const counts = await getCountsConsistent(workspace.id);
+    const scheduledTotals = await getScheduledTotalsForWeek(workspace.id);
+    const nextSuggested = await getNextSuggestedWithProposal(workspace.id);
 
     const today = new Date().toLocaleDateString('en-US', { 
       weekday: 'long', 
@@ -24,20 +230,15 @@ export default async function handler(req, res) {
     <title>FlowState Demo - AI-Powered Productivity Platform</title>
     <meta name="description" content="Experience FlowState's AI-powered productivity platform with GTD methodology, task management, habit tracking, and intelligent automation.">
     <meta name="robots" content="index,follow">
-    
-    <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="FlowState Demo - AI-Powered Productivity Platform">
     <meta property="og:description" content="Experience FlowState's AI-powered productivity platform with GTD methodology, task management, habit tracking, and intelligent automation.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://theflowstateapp.com/api/demo/static">
     <meta property="og:image" content="https://theflowstateapp.com/og-image.svg">
-    
-    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="FlowState Demo - AI-Powered Productivity Platform">
     <meta name="twitter:description" content="Experience FlowState's AI-powered productivity platform with GTD methodology, task management, habit tracking, and intelligent automation.">
     <meta name="twitter:image" content="https://theflowstateapp.com/og-image.svg">
-    
     <style>
       body { 
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
@@ -48,7 +249,7 @@ export default async function handler(req, res) {
         line-height: 1.6; 
       }
       .container { 
-        max-width: 960px; 
+        max-width: 800px; 
         margin: 0 auto; 
         padding: 20px; 
         background-color: #ffffff; 
@@ -59,7 +260,6 @@ export default async function handler(req, res) {
         color: #1F2937; 
         margin-bottom: 20px; 
         font-size: 2.5rem; 
-        text-align: center; 
       }
       h2 { 
         color: #1F2937; 
@@ -74,18 +274,6 @@ export default async function handler(req, res) {
         margin-top: 20px; 
         margin-bottom: 10px; 
         font-size: 1.5rem; 
-      }
-      .grid { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-        gap: 20px; 
-        margin-bottom: 30px; 
-      }
-      .card { 
-        background-color: #f8fafc; 
-        border: 1px solid #e2e8f0; 
-        border-radius: 8px; 
-        padding: 20px; 
       }
       .stat-grid { 
         display: flex; 
@@ -110,6 +298,13 @@ export default async function handler(req, res) {
         font-size: 0.9rem; 
         color: #64748b; 
       }
+      .card { 
+        background-color: #f8fafc; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 8px; 
+        padding: 20px; 
+        margin-bottom: 20px; 
+      }
       .cta-button { 
         background-color: #0284c7; 
         color: white; 
@@ -132,42 +327,16 @@ export default async function handler(req, res) {
         background-color: #0284c7; 
         color: white; 
       }
-      .task-title { 
-        font-weight: 600; 
-        margin-bottom: 8px; 
-      }
-      .task-chips { 
-        display: flex; 
-        gap: 8px; 
-        margin-bottom: 8px; 
-        flex-wrap: wrap; 
-      }
-      .priority { 
-        background-color: #fef3c7; 
-        color: #92400e; 
-        padding: 2px 8px; 
-        border-radius: 4px; 
-        font-size: 0.8rem; 
-        font-weight: 600; 
-      }
-      .time-window { 
-        background-color: #dbeafe; 
-        color: #1e40af; 
-        padding: 2px 8px; 
-        border-radius: 4px; 
-        font-size: 0.8rem; 
-      }
-      .context-chip { 
-        background-color: #f3e8ff; 
-        color: #7c3aed; 
-        padding: 2px 8px; 
-        border-radius: 4px; 
-        font-size: 0.8rem; 
+      footer { 
+        text-align: center; 
+        margin-top: 50px; 
+        padding: 20px; 
+        color: #6B7280; 
+        border-top: 1px solid #E5E7EB; 
       }
       @media (max-width: 768px) {
         .container { padding: 10px; }
         h1 { font-size: 2rem; }
-        .grid { grid-template-columns: 1fr; }
         .stat-grid { flex-direction: column; }
         .stat-item { border-right: none; border-bottom: 1px solid #e2e8f0; }
       }
@@ -176,164 +345,110 @@ export default async function handler(req, res) {
 <body>
     <div class="container">
         <h1>FlowState Demo</h1>
-        <p style="text-align: center; font-size: 1.1rem; color: #64748b; margin-bottom: 30px;">
-            A snapshot of your productivity on <strong>${today}</strong>
-        </p>
-
-        <h2>📊 Dashboard Snapshot</h2>
+        <p>A snapshot of your productivity on <strong>${today}</strong>.</p>
+        
+        <h2>📊 Quick Stats</h2>
         <div class="stat-grid">
             <div class="stat-item">
-                <div class="stat-number">12</div>
+                <div class="stat-number">${counts.totalTasks}</div>
                 <div class="stat-label">Total Tasks</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number">5</div>
+                <div class="stat-number">${counts.completedThisWeek}</div>
                 <div class="stat-label">Completed This Week</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number">8.5</div>
+                <div class="stat-number">${scheduledTotals.hours}</div>
                 <div class="stat-label">Scheduled Hours</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number">2</div>
+                <div class="stat-number">${counts.activeProjects}</div>
                 <div class="stat-label">Active Projects</div>
             </div>
         </div>
-
-        <h2>📋 Tasks Overview</h2>
-        <div class="grid">
-            <div class="card">
-                <h3>📋 Today</h3>
-                <div class="task-title">Complete project proposal</div>
-                <div class="task-chips">
-                    <span class="priority">HIGH</span>
-                    <span class="time-window">Wed, 10:30–11:15</span>
-                    <span class="context-chip">Deep Work</span>
-                </div>
-                
-                <div class="task-title">Review team feedback</div>
-                <div class="task-chips">
-                    <span class="priority">MEDIUM</span>
-                    <span class="time-window">due 5:30 pm</span>
-                    <span class="context-chip">Admin</span>
-                </div>
-                
-                <div class="task-title">Update documentation</div>
-                <div class="task-chips">
-                    <span class="priority">LOW</span>
-                    <span class="time-window">Tomorrow</span>
-                </div>
-                
-                <div class="task-title">Client call preparation</div>
-                <div class="task-chips">
-                    <span class="priority">HIGH</span>
-                    <span class="time-window">Fri</span>
-                    <span class="context-chip">Call</span>
-                </div>
-                
-                <div class="task-title">Team standup</div>
-                <div class="task-chips">
-                    <span class="priority">MEDIUM</span>
-                    <span class="time-window">Wed, 9:00–9:30</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>🎯 Next suggested task</h3>
+        
+        <h2>🎯 Next Suggested Task</h2>
+        <div class="card">
+            ${nextSuggested ? `
                 <div style="background-color: #ecfdf5; border-left: 4px solid #10B981; padding: 15px; border-radius: 4px;">
-                    <div style="font-weight: 600; margin-bottom: 8px;">Complete project proposal</div>
+                    <div style="font-weight: 600; margin-bottom: 8px;">${escapeHtml(nextSuggested.task.name)}</div>
                     <div style="color: #065f46; margin-bottom: 8px;">
-                        Proposed: <strong>Wed, 10:30–11:15</strong> • Fits your deep work window
+                        Proposed: <strong>${escapeHtml(nextSuggested.proposal?.label || 'No slot available')}</strong>
+                        ${nextSuggested.proposal?.rationale ? ` • ${escapeHtml(nextSuggested.proposal.rationale)}` : ''}
                     </div>
                     <div style="font-size: 0.9rem; color: #64748b;">
                         Accept/Reshuffle available in the interactive app.
                     </div>
                 </div>
-            </div>
-
-            <div class="card">
-                <h3>🔥 Habit Streaks</h3>
-                <p><strong>Daily Exercise</strong> - 7 day streak</p>
-                <p><strong>Morning Meditation</strong> - 12 day streak</p>
-                <p><strong>Read Books</strong> - 5 day streak</p>
-            </div>
-
-            <div class="card">
-                <h3>📝 Today's Journal</h3>
-                <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 4px;">
-                    <p>Great progress on the project today. Team collaboration was excellent and we made significant headway on the Q4 launch planning...</p>
+            ` : `
+                <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 4px; font-style: italic; color: #065f46;">
+                    No unscheduled tasks found. Great job staying organized!
                 </div>
-            </div>
+            `}
         </div>
 
-        <h2>🤖 AI Capture (Read-only example)</h2>
+        <h2>📋 Today's Tasks</h2>
         <div class="card">
-            <h3>Example input</h3>
-            <p style="font-style: italic; color: #64748b; margin-bottom: 20px;">
-                "Finish landing page hero for DXB funnel by Friday; 45 mins; urgent"
-            </p>
-            
-            <h3>What we heard</h3>
-            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
-                <div style="margin-bottom: 15px;">
-                    <strong>Title:</strong> Finish landing page hero<br>
-                    <strong>PARA:</strong> Project → DXB Real Estate Funnel<br>
-                    <strong>Priority:</strong> <span class="priority">URGENT</span><br>
-                    <strong>Due:</strong> Fri, 12 Sep, 5:00 pm<br>
-                    <strong>Estimate:</strong> 45 mins<br>
-                    <strong>Context:</strong> <span class="context-chip">Deep Work</span><br>
-                    <strong>Suggested time block:</strong> <span class="time-window">Fri, 10:00–10:45</span> • fits deep-work window
+            <div style="margin-bottom: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Complete project proposal</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+                    <span style="background-color: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">HIGH</span>
+                    <span style="background-color: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">Wed, 10:30–11:15</span>
+                    <span style="background-color: #f3e8ff; color: #7c3aed; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">Deep Work</span>
                 </div>
             </div>
-            
-            <p style="margin-top: 20px; text-align: center;">
-                <a href="/api/demo/access" class="cta-button">Try this live → /api/demo/access</a>
-            </p>
-        </div>
-
-        <h2>📈 Weekly Review Preview</h2>
-        <div class="grid">
-            <div class="card">
-                <h3>✅ Completed This Week</h3>
-                <ul>
-                    <li>Project proposal draft</li>
-                    <li>Team feedback review</li>
-                    <li>Documentation updates</li>
-                    <li>Client call preparation</li>
-                    <li>Team standup</li>
-                </ul>
+            <div style="margin-bottom: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Review team feedback</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+                    <span style="background-color: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">MEDIUM</span>
+                    <span style="background-color: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">due 2:00 pm</span>
+                    <span style="background-color: #f3e8ff; color: #7c3aed; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">Admin</span>
+                </div>
             </div>
-            <div class="card">
-                <h3>⏳ Carry-overs</h3>
-                <ul>
-                    <li>Final project proposal</li>
-                    <li>Team meeting scheduling</li>
-                    <li>Code review completion</li>
-                </ul>
-            </div>
-            <div class="card">
-                <h3>🌟 Highlights</h3>
-                <ul>
-                    <li>Great team collaboration on Q4 launch</li>
-                    <li>Successful AI integration testing</li>
-                    <li>Improved work-life balance this week</li>
-                </ul>
+            <div style="margin-bottom: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px;">
+                <div style="font-weight: 600; margin-bottom: 8px;">Client call preparation</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+                    <span style="background-color: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">HIGH</span>
+                    <span style="background-color: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">14:00–14:30</span>
+                    <span style="background-color: #f3e8ff; color: #7c3aed; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">Call</span>
+                </div>
             </div>
         </div>
 
+        <h2>🔥 Habit Streaks</h2>
+        <div class="card">
+            <p><strong>Daily Exercise</strong> - 7 day streak</p>
+            <p><strong>Morning Meditation</strong> - 12 day streak</p>
+            <p><strong>Read Books</strong> - 5 day streak</p>
+        </div>
+
+        <h2>📝 Today's Journal</h2>
+        <div class="card">
+            <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; border-radius: 4px;">
+                <p>Great progress on the project today. Team collaboration was excellent and we made significant headway on the Q4 launch planning...</p>
+            </div>
+        </div>
+        
         <div style="text-align: center; margin: 40px 0;">
-            <a href="/api/demo/access" class="cta-button">Open Interactive Demo</a>
-            <a href="/demo" class="cta-button cta-secondary">See Demo Overview</a>
+            <a href="/api/demo/access?utm_source=demo-static" class="cta-button">Open Interactive Demo</a>
+            <a href="/demo" class="cta-button cta-secondary">See Full Overview</a>
         </div>
     </div>
+    
+    <footer>
+        <p>&copy; ${new Date().getFullYear()} FlowState. All rights reserved.</p>
+        <p><a href="/privacy" style="color: #0284c7; text-decoration: none;">Privacy Policy</a> | 
+           <a href="mailto:support@theflowstateapp.com" style="color: #0284c7; text-decoration: none;">Contact Us</a></p>
+        <p><small>Data resets periodically. Demo only.</small></p>
+    </footer>
 </body>
 </html>`;
 
-    console.log('STATIC_DEMO: Sending response');
+    console.log('DEMO_STATIC: Sending response');
     res.status(200).send(html);
 
   } catch (error) {
-    console.error('STATIC_DEMO: Error:', error);
+    console.error('DEMO_STATIC: Error generating static demo:', error);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=300');
     res.setHeader('X-Robots-Tag', 'index,follow');
