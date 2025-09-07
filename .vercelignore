@@ -1,6 +1,5 @@
 src/
 public/
-build/
 node_modules/
 *.md
 .env.local
