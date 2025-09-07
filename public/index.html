@@ -10,66 +10,43 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             margin: 0;
-            padding: 40px;
+            padding: 0;
             background: #f8fafc;
             color: #1e293b;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: center;
+        #root {
+            min-height: 100vh;
         }
-        h1 {
-            color: #3b82f6;
-            margin-bottom: 20px;
+        .dev-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            color: #1e40af;
+            z-index: 9999;
+            max-width: 200px;
         }
-        p {
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        .links {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        a {
-            display: inline-block;
-            padding: 12px 24px;
-            background: #3b82f6;
-            color: white;
+        .dev-info a {
+            color: #1e40af;
             text-decoration: none;
-            border-radius: 8px;
             font-weight: 500;
-            transition: background 0.2s;
         }
-        a:hover {
-            background: #2563eb;
-        }
-        .note {
-            margin-top: 40px;
-            padding: 20px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #64748b;
+        .dev-info a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 FlowState Development</h1>
-        <p>Welcome to FlowState development environment!</p>
-        
-        <div class="links">
-            <a href="/api/site/home">Marketing Homepage</a>
-            <a href="/demo">Demo Overview</a>
-            <a href="/api/debug/version">Version Info</a>
-        </div>
-        
-        <div class="note">
-            <strong>Note:</strong> This is a development-only page. In production, the root path "/" is served by our site router at /api/site/home.
-        </div>
+    <div class="dev-info">
+        <strong>Dev Mode</strong><br>
+        <a href="/api/site/home">Marketing</a> | 
+        <a href="/demo">Demo</a> | 
+        <a href="/api/debug/version">Version</a>
     </div>
+    <div id="root"></div>
 </body>
 </html>
