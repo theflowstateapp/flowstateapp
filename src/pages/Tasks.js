@@ -199,7 +199,7 @@ const Tasks = () => {
         const result = await response.json();
         // Mark task as in focus
         setActiveSessions(prev => new Set([...prev, task.id]));
-        navigate(`/app/focus?sid=${result.sessionId}`);
+        navigate(`/focus?sid=${result.sessionId}`);
       } else {
         const error = await response.json();
         alert(`Failed to start focus session: ${error.message}`);

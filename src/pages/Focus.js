@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const FocusMode = () => {
-  const router = useRouter();
-  const { sid } = router.query;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sid = searchParams.get('sid');
   
   const [session, setSession] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
@@ -167,7 +168,7 @@ const FocusMode = () => {
         const result = await response.json();
         // Show summary and navigate back
         alert(`Session completed!\nDuration: ${result.summary.duration} minutes\nDistractions: ${result.summary.distractions}\nEfficiency: ${result.summary.efficiency}%`);
-        router.push('/app/tasks');
+        navigate('/tasks');
       }
     } catch (error) {
       console.error('Failed to end session:', error);
@@ -222,7 +223,7 @@ const FocusMode = () => {
         </div>
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => router.push('/app/tasks')}
+            onClick={() => navigate('/tasks')}
             className="text-gray-400 hover:text-white text-sm"
           >
             ← Back to Tasks

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 
 const FocusButton = ({ task, className = '', onStartFocus }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [isStarting, setIsStarting] = useState(false);
   
   const startFocus = async () => {
@@ -42,7 +42,7 @@ const FocusButton = ({ task, className = '', onStartFocus }) => {
         if (onStartFocus) {
           onStartFocus(result);
         } else {
-          router.push(`/app/focus?sid=${result.sessionId}`);
+          navigate(`/focus?sid=${result.sessionId}`);
         }
       } else {
         const error = await response.json();

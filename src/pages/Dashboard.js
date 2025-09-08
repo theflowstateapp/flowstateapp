@@ -333,7 +333,7 @@ const Dashboard = () => {
               Today Focus
             </h2>
             <button
-              onClick={() => navigate('/app/focus')}
+              onClick={() => navigate('/focus')}
               className="text-sm text-blue-600 hover:text-blue-700 font-medium"
             >
               View all sessions →
@@ -396,7 +396,7 @@ const Dashboard = () => {
                 </button>
                 
                 <button
-                  onClick={() => navigate('/app/focus')}
+                  onClick={() => navigate('/focus')}
                   className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg font-medium text-sm"
                 >
                   Full View
