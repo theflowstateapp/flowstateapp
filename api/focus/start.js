@@ -32,7 +32,7 @@ module.exports = async function handler(req, res) {
       return res.status(405).json({ error: 'Method not allowed' });
     }
     
-    const { taskId, plannedMinutes = 50 } = req.body;
+    const { taskId, plannedMinutes = 50, intention, ritual } = req.body;
     
     // For demo purposes, use demo workspace
     const workspaceId = 'demo-workspace-1';
@@ -58,15 +58,29 @@ module.exports = async function handler(req, res) {
     const startAt = getISTTime();
     const targetEnd = addMinutesToIST(plannedMinutes);
     
+    // Prepare session data
+    const sessionData = {
+      user_id: userId,
+      workspace_id: workspaceId,
+      task_id: taskId || null,
+      start_at: startAt.toISOString(),
+      planned_minutes: plannedMinutes
+    };
+    
+    // Add intention if provided (trim to 200 chars)
+    if (intention && intention.trim()) {
+      sessionData.intention = intention.trim().slice(0, 200);
+    }
+    
+    // Add ritual data if provided
+    if (ritual && Object.keys(ritual).length > 0) {
+      sessionData.ritual = ritual;
+      sessionData.prep_done_at = startAt.toISOString();
+    }
+    
     const { data: session, error: sessionError } = await supabase
       .from('focus_sessions')
-      .insert({
-        user_id: userId,
-        workspace_id: workspaceId,
-        task_id: taskId || null,
-        start_at: startAt.toISOString(),
-        planned_minutes: plannedMinutes
-      })
+      .insert(sessionData)
       .select()
       .single();
     
@@ -97,7 +111,9 @@ module.exports = async function handler(req, res) {
       } : null,
       startAt: startAt.toISOString(),
       plannedMinutes,
-      targetEnd: targetEnd.toISOString()
+      targetEnd: targetEnd.toISOString(),
+      intention: session.intention,
+      ritual: session.ritual
     });
     
   } catch (error) {

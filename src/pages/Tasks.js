@@ -157,7 +157,12 @@ const Tasks = () => {
         // Find the first visible task and start focus
         const firstTask = sortedTasks[0];
         if (firstTask) {
-          handleStartFocus(firstTask);
+          // For keyboard shortcut, use default values
+          handleStartFocus(firstTask, {
+            plannedMinutes: 50,
+            intention: '',
+            ritual: null
+          });
         }
       }
     };
@@ -167,31 +172,16 @@ const Tasks = () => {
   }, [sortedTasks]);
 
   // Handle focus session start
-  const handleStartFocus = async (task) => {
+  const handleStartFocus = async (task, focusData) => {
     try {
-      // Calculate planned minutes based on task schedule
-      let plannedMinutes = 50; // default
-      
-      if (task.start_at && task.end_at) {
-        const start = new Date(task.start_at);
-        const end = new Date(task.end_at);
-        const scheduledMinutes = Math.round((end - start) / (1000 * 60));
-        
-        // If task starts within ±10 minutes, use scheduled duration
-        const now = new Date();
-        const timeDiff = Math.abs(start - now) / (1000 * 60);
-        
-        if (timeDiff <= 10) {
-          plannedMinutes = scheduledMinutes;
-        }
-      }
-      
       const response = await fetch('/api/focus/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           taskId: task.id,
-          plannedMinutes
+          plannedMinutes: focusData.plannedMinutes,
+          intention: focusData.intention,
+          ritual: focusData.ritual
         })
       });
       
@@ -234,7 +224,14 @@ const Tasks = () => {
     {
       label: 'Start Focus',
       icon: Play,
-      action: (task) => handleStartFocus(task)
+      action: (task) => {
+        // For context menu, use default values
+        handleStartFocus(task, {
+          plannedMinutes: 50,
+          intention: '',
+          ritual: null
+        });
+      }
     },
     {
       label: 'Add 25m Focus block',

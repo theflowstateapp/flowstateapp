@@ -124,7 +124,9 @@ module.exports = async function handler(req, res) {
         actualMinutes: actualMinutes,
         distractionCount: session.distraction_count,
         selfRating: selfRating,
-        notes: session.notes
+        notes: session.notes,
+        intention: session.intention,
+        ritual: session.ritual
       },
       task: task ? {
         id: task.id,
@@ -134,7 +136,9 @@ module.exports = async function handler(req, res) {
         duration: actualMinutes,
         distractions: session.distraction_count,
         efficiency: Math.round((actualMinutes / session.planned_minutes) * 100),
-        rating: selfRating
+        rating: selfRating,
+        intention: session.intention,
+        ritual: session.ritual
       }
     });
     

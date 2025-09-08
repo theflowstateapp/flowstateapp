@@ -14,6 +14,8 @@ const FocusMode = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [showEndModal, setShowEndModal] = useState(false);
   const [selfRating, setSelfRating] = useState(0);
+  const [intention, setIntention] = useState('');
+  const [ritual, setRitual] = useState(null);
   
   const intervalRef = useRef(null);
   const interruptionRef = useRef(null);
@@ -36,9 +38,17 @@ const FocusMode = () => {
         },
         startAt: new Date().toISOString(),
         plannedMinutes: 50,
-        targetEnd: new Date(Date.now() + 50 * 60 * 1000).toISOString()
+        targetEnd: new Date(Date.now() + 50 * 60 * 1000).toISOString(),
+        intention: 'Finish the API documentation section',
+        ritual: {
+          tabsClosed: true,
+          phoneSilent: true,
+          materialsReady: false
+        }
       };
       setSession(mockSession);
+      setIntention(mockSession.intention || '');
+      setRitual(mockSession.ritual);
       setIsRunning(true);
     }
   }, [sid]);
@@ -167,7 +177,17 @@ const FocusMode = () => {
       if (response.ok) {
         const result = await response.json();
         // Show summary and navigate back
-        alert(`Session completed!\nDuration: ${result.summary.duration} minutes\nDistractions: ${result.summary.distractions}\nEfficiency: ${result.summary.efficiency}%`);
+        let summaryText = `Session completed!\nDuration: ${result.summary.duration} minutes\nDistractions: ${result.summary.distractions}\nEfficiency: ${result.summary.efficiency}%`;
+        
+        if (result.summary.intention) {
+          summaryText += `\n\nIntention: ${result.summary.intention}`;
+        }
+        
+        if (result.summary.rating) {
+          summaryText += `\nRating: ${result.summary.rating}/5`;
+        }
+        
+        alert(summaryText);
         navigate('/tasks');
       }
     } catch (error) {
@@ -220,6 +240,13 @@ const FocusMode = () => {
           <div className="text-sm text-gray-300">
             Target: {formatISTTime(session.targetEnd)}
           </div>
+          {ritual && (
+            <div className="flex items-center space-x-2 text-xs text-gray-400 opacity-60">
+              {ritual.tabsClosed && <span>Tabs ✓</span>}
+              {ritual.phoneSilent && <span>Phone ✓</span>}
+              {ritual.materialsReady && <span>Materials ✓</span>}
+            </div>
+          )}
         </div>
         <div className="flex items-center space-x-4">
           <button
@@ -239,6 +266,15 @@ const FocusMode = () => {
             <h1 className="text-4xl font-light mb-8 leading-relaxed">
               {session.task.title}
             </h1>
+            
+            {/* Intention display */}
+            {intention && (
+              <div className="mb-8 text-center">
+                <p className="text-lg text-gray-300 italic">
+                  Intention: {intention}
+                </p>
+              </div>
+            )}
             
             {/* Subtasks */}
             {session.task.subtasks && (
