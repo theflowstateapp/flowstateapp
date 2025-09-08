@@ -1,5 +1,3 @@
-const { logEventSafe } = require("../../lib/analytics.js");
-
 const DESTS = {
   demo_access:  "/api/demo/access",
   static_preview:"/api/demo/static",
@@ -12,13 +10,6 @@ function buildURL(base, params) {
   const sep = hasQ ? "&" : "?";
   const q = new URLSearchParams(params).toString();
   return base + sep + q;
-}
-
-function clientIP(req) {
-  return req.headers["x-forwarded-for"]?.split(",")[0]?.trim()
-      || req.headers["x-real-ip"]
-      || req.connection?.remoteAddress
-      || "";
 }
 
 module.exports = async function handler(req, res) {
@@ -49,8 +40,8 @@ module.exports = async function handler(req, res) {
 
     const location = buildURL(dest, params);
 
-    // Log event (fire-and-forget)
-    const payload = {
+    // Log event (fire-and-forget) - simplified for now
+    console.log("[analytics] Event:", {
       type: "click",
       src: src ? String(src) : null,
       variant: v ? String(v) : null,
@@ -58,10 +49,9 @@ module.exports = async function handler(req, res) {
       to_key: toKey,
       path: req.url,
       referer: req.headers["referer"] || "",
-      ip: clientIP(req),
+      ip: req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || "",
       ua: req.headers["user-agent"] || ""
-    };
-    logEventSafe(payload);
+    });
 
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("Location", location);
