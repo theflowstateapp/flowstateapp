@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import DailyShutdownBanner from '../components/DailyShutdownBanner';
 import {
   Plus, Target, CheckCircle, TrendingUp, Clock, Calendar,
   BarChart3, Activity, Star, Brain, Mic, Sparkles, 
@@ -98,6 +99,7 @@ const Dashboard = () => {
   const [activeSession, setActiveSession] = useState(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [status, setStatus] = useState(null);
 
   // Calculate metrics
   const completedToday = tasks.filter(task => 
@@ -172,6 +174,23 @@ const Dashboard = () => {
     }
   }, [activeSession, isPaused]);
 
+  // Load daily shutdown status
+  useEffect(() => {
+    const loadStatus = async () => {
+      try {
+        const response = await fetch('/api/day/status');
+        if (response.ok) {
+          const data = await response.json();
+          setStatus(data);
+        }
+      } catch (error) {
+        console.error('Failed to load daily shutdown status:', error);
+      }
+    };
+
+    loadStatus();
+  }, []);
+
   // Handle theme change
   const handleThemeChange = (theme) => {
     setCurrentTheme(theme);
@@ -236,6 +255,61 @@ const Dashboard = () => {
     }
   };
 
+  // Daily Shutdown Card Component
+  const DailyShutdownCard = () => {
+    if (!status) return null;
+
+    if (!status.todayReviewExists) {
+      return (
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 shadow-sm border border-purple-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Daily Shutdown</h3>
+                <p className="text-sm text-gray-600">30 seconds to reset and plan tomorrow</p>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/shutdown')}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-sm transition-colors"
+            >
+              Start
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (status.tomorrowPlanExists) {
+      return (
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Tomorrow: {status.tomorrowTaskCount} queued</h3>
+                <p className="text-sm text-gray-600">Your plan is ready for tomorrow</p>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/agenda')}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm transition-colors"
+            >
+              View Agenda
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -284,6 +358,9 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Daily Shutdown Banner */}
+      <DailyShutdownBanner />
+      
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4 dashboard-header">
         <div className="flex items-center justify-between">
@@ -438,6 +515,9 @@ const Dashboard = () => {
             </div>
           )}
         </div>
+
+        {/* Daily Shutdown Card */}
+        <DailyShutdownCard />
 
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

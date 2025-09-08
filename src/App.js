@@ -55,6 +55,7 @@ function App() {
           <Route path="/demo/*" element={<AppLayout />} />
           <Route path="/dashboard" element={<AppLayout />} />
           <Route path="/dashboard/*" element={<AppLayout />} />
+          <Route path="/shutdown" element={<AppLayout />} />
           <Route path="/*" element={<AppLayout />} />
         </Routes>
       </AuthProvider>

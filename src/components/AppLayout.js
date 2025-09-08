@@ -28,6 +28,7 @@ import AdvancedCalendar from '../pages/AdvancedCalendar';
 import FocusPage from '../pages/FocusPage';
 import NextActionsPage from '../pages/NextActionsPage';
 import FocusModePage from '../pages/FocusModePage';
+import DailyShutdown from '../pages/DailyShutdown';
 import DemoBanner from './DemoBanner';
 import HomePage from '../pages/HomePage';
 import DashboardNew from '../pages/DashboardNew';
@@ -227,6 +228,7 @@ const AppLayout = () => {
             <Route path="/focus" element={<FocusPage />} />
             <Route path="/next-actions" element={<NextActionsPage />} />
             <Route path="/focus-mode" element={<FocusModePage />} />
+            <Route path="/shutdown" element={<DailyShutdown />} />
             <Route path="/task/:taskId" element={<TaskDetail />} />
             <Route path="/new-task" element={<NewTaskForm />} />
             <Route path="/new-project" element={<NewProjectForm />} />
