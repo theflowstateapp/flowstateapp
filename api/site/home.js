@@ -1,14 +1,12 @@
-// Import demo page renderers at the top
-const { 
-  resolveDemoPageMeta,
-  renderDemoOverviewHTML,
-  renderDemoTasksHTML,
-  renderDemoHabitsHTML,
-  renderDemoJournalHTML,
-  renderDemoReviewHTML,
-  renderDemoAgendaHTML,
-  renderDemoSettingsHTML
-} = require('../lib/demo-pages.js');
+// Import demo page renderers conditionally
+let demoRenderers = null;
+
+function getDemoRenderers() {
+  if (!demoRenderers) {
+    demoRenderers = require('../lib/demo-pages.js');
+  }
+  return demoRenderers;
+}
 
 // bump this string each commit (or set via env in CI)
 const BUILD_ID = process.env.SITE_BUILD_ID || new Date().toISOString();
@@ -29,6 +27,8 @@ module.exports = async function handler(req, res) {
 
     // Check if this is a demo route
     if (req.query.route === 'demo') {
+      const { resolveDemoPageMeta, renderDemoOverviewHTML, renderDemoTasksHTML, renderDemoHabitsHTML, renderDemoJournalHTML, renderDemoReviewHTML, renderDemoAgendaHTML, renderDemoSettingsHTML } = getDemoRenderers();
+      
       const page = (req.query.page || "overview").toString();
       const meta = resolveDemoPageMeta(page);
       
