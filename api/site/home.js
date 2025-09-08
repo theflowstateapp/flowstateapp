@@ -1,5 +1,6 @@
 // Import demo page renderers at the top
 const { 
+  resolveDemoPageMeta,
   renderDemoOverviewHTML,
   renderDemoTasksHTML,
   renderDemoHabitsHTML,
@@ -29,45 +30,50 @@ module.exports = async function handler(req, res) {
     // Check if this is a demo route
     if (req.query.route === 'demo') {
       const page = (req.query.page || "overview").toString();
+      const meta = resolveDemoPageMeta(page);
       
       try {
         let html;
         switch (page) {
           case "overview":
-            html = await renderDemoOverviewHTML();
+            html = await renderDemoOverviewHTML(meta);
             break;
           case "tasks":
-            html = await renderDemoTasksHTML();
+            html = await renderDemoTasksHTML(meta);
             break;
           case "habits":
-            html = await renderDemoHabitsHTML();
+            html = await renderDemoHabitsHTML(meta);
             break;
           case "journal":
-            html = await renderDemoJournalHTML();
+            html = await renderDemoJournalHTML(meta);
             break;
           case "review":
-            html = await renderDemoReviewHTML();
+            html = await renderDemoReviewHTML(meta);
             break;
           case "agenda":
-            html = await renderDemoAgendaHTML();
+            html = await renderDemoAgendaHTML(meta);
             break;
           case "settings":
-            html = await renderDemoSettingsHTML();
+            html = await renderDemoSettingsHTML(meta);
             break;
           default:
-            html = await renderDemoOverviewHTML();
+            html = await renderDemoOverviewHTML(meta);
             break;
         }
         
         return res.status(200).send(html);
       } catch (error) {
         console.error('DEMO_ROUTER: Error rendering demo page:', error);
+        const canonical = `https://theflowstateapp.com${meta.canonicalPath}`;
+        const title = meta.title || "FlowState Demo";
         const fallbackHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo Temporarily Unavailable - FlowState</title>
+    <title>${title}</title>
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="${canonical}">
     <style>
         body { font-family: system-ui; padding: 40px; max-width: 600px; margin: 0 auto; text-align: center; }
         .error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 20px; border-radius: 8px; margin: 20px 0; }
