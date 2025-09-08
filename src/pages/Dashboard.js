@@ -62,13 +62,15 @@ import {
   Hachijuukyubancha, Kyuujuubancha, Kyuujuuichibancha, Kyuujuunibancha,
   Kyuujuusanbancha, Kyuujuuyonbancha, Kyuujuugobancha, Kyuujuurokubancha,
   Kyuujuushichibancha, Kyuujuuhachibancha, Kyuujuukyubancha, Hyaku,
-  Bancha as HyakuBancha, Tag
+  Bancha as HyakuBancha, Tag, Play, Pause, Square, Zap as FocusIcon
 } from 'lucide-react';
 import DailyBriefing from '../components/DailyBriefing';
 import FlowStateLogo from '../components/FlowStateLogo';
 import CustomizeModal from '../components/CustomizeModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import SkeletonLoader from '../components/SkeletonLoader';
+import { FlowScoreBadge } from '../components/FlowMetrics';
+import FocusButton from '../components/FocusButton';
 import toast from 'react-hot-toast';
 import { useData } from '../contexts/DataContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -93,6 +95,9 @@ const Dashboard = () => {
   const [timeOfDay, setTimeOfDay] = useState('');
   const [showCustomizeModal, setShowCustomizeModal] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('default');
+  const [activeSession, setActiveSession] = useState(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Calculate metrics
   const completedToday = tasks.filter(task => 
@@ -128,6 +133,45 @@ const Dashboard = () => {
     }
   }, []);
 
+  // Check for active focus session
+  useEffect(() => {
+    const checkActiveSession = async () => {
+      try {
+        const response = await fetch('/api/focus/metrics');
+        if (response.ok) {
+          const data = await response.json();
+          // Check if there's an active session (no end_at)
+          const activeSessionData = data.recentSessions?.find(session => !session.endAt);
+          if (activeSessionData) {
+            setActiveSession(activeSessionData);
+            // Calculate elapsed time
+            const startTime = new Date(activeSessionData.startAt);
+            const now = new Date();
+            setElapsedSeconds(Math.floor((now - startTime) / 1000));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check active session:', error);
+      }
+    };
+
+    checkActiveSession();
+    
+    // Check every 30 seconds for active session updates
+    const interval = setInterval(checkActiveSession, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Timer for active session
+  useEffect(() => {
+    if (activeSession && !isPaused) {
+      const interval = setInterval(() => {
+        setElapsedSeconds(prev => prev + 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [activeSession, isPaused]);
+
   // Handle theme change
   const handleThemeChange = (theme) => {
     setCurrentTheme(theme);
@@ -144,6 +188,63 @@ const Dashboard = () => {
     
     // Navigate to inbox to see the captured item
     navigate('/inbox');
+  };
+
+  // Focus session controls
+  const toggleFocusSession = async () => {
+    if (!activeSession) return;
+    
+    try {
+      const eventType = isPaused ? 'resume' : 'pause';
+      const response = await fetch('/api/focus/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: activeSession.id,
+          type: eventType
+        })
+      });
+      
+      if (response.ok) {
+        setIsPaused(!isPaused);
+      }
+    } catch (error) {
+      console.error('Failed to toggle focus session:', error);
+    }
+  };
+
+  const stopFocusSession = async () => {
+    if (!activeSession) return;
+    
+    try {
+      const response = await fetch('/api/focus/stop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: activeSession.id
+        })
+      });
+      
+      if (response.ok) {
+        setActiveSession(null);
+        setElapsedSeconds(0);
+        setIsPaused(false);
+        toast.success('Focus session completed!');
+      }
+    } catch (error) {
+      console.error('Failed to stop focus session:', error);
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -195,6 +296,10 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center space-x-3">
+            <FlowScoreBadge 
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => navigate('/app/review')}
+            />
             <button
               onClick={() => setShowCustomizeModal(true)}
               className="customize-button flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -219,6 +324,120 @@ const Dashboard = () => {
           overdueTasks={overdueTasks}
           activeStreaks={habits.filter(habit => habit.streak > 0).length}
         />
+
+        {/* Today Focus */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+              <FocusIcon className="w-5 h-5 mr-2 text-blue-600" />
+              Today Focus
+            </h2>
+            <button
+              onClick={() => navigate('/app/focus')}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            >
+              View all sessions →
+            </button>
+          </div>
+          
+          {activeSession ? (
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 className="font-medium text-gray-900">
+                    {activeSession.task?.title || 'Focus Session'}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Started {new Date(activeSession.startAt).toLocaleTimeString('en-US', {
+                      timeZone: 'Asia/Kolkata',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })} IST
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-mono font-bold text-blue-600">
+                    {formatTime(elapsedSeconds)}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Target: {activeSession.plannedMinutes}m
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={toggleFocusSession}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm ${
+                    isPaused 
+                      ? 'bg-green-600 hover:bg-green-700 text-white' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {isPaused ? (
+                    <>
+                      <Play className="w-4 h-4 mr-1 inline" />
+                      Resume
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="w-4 h-4 mr-1 inline" />
+                      Pause
+                    </>
+                  )}
+                </button>
+                
+                <button
+                  onClick={stopFocusSession}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium text-sm"
+                >
+                  <Square className="w-4 h-4 mr-1 inline" />
+                  Stop
+                </button>
+                
+                <button
+                  onClick={() => navigate('/app/focus')}
+                  className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg font-medium text-sm"
+                >
+                  Full View
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="text-gray-600 mb-4">Pick 3 for today</p>
+              <div className="space-y-3">
+                {todayFocus.slice(0, 3).map((task) => (
+                  <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-4 h-4 border-2 border-gray-300 rounded"></div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{task.title}</p>
+                        <p className="text-xs text-gray-500">{task.project?.name}</p>
+                      </div>
+                    </div>
+                    <FocusButton 
+                      task={task} 
+                      className="text-xs px-2 py-1"
+                    />
+                  </div>
+                ))}
+                {todayFocus.length === 0 && (
+                  <div className="text-center py-6">
+                    <FocusIcon className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">No high-priority tasks for today</p>
+                    <button
+                      onClick={() => navigate('/tasks')}
+                      className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      Add some tasks
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

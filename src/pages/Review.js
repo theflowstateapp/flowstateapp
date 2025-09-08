@@ -17,10 +17,14 @@ import {
   Save,
   Loader,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Zap,
+  Timer,
+  Brain
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProjects, useTasks, useAreas } from '../hooks/useSupabase';
+import { FlowMetricsSection } from '../components/FlowMetrics';
 import toast from 'react-hot-toast';
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isToday } from 'date-fns';
 
@@ -231,6 +235,9 @@ const Review = () => {
           </div>
         </div>
       </div>
+
+      {/* Flow Metrics */}
+      <FlowMetricsSection />
 
       {/* Review Form */}
       {showAddReview && (

@@ -34,7 +34,8 @@ const Journal = () => {
       wordCount: 45,
       gratitude: ['Team collaboration', 'Meeting deadlines', 'Positive feedback'],
       goals: ['Continue morning routine', 'Maintain productivity streak'],
-      insights: 'Morning routines significantly impact daily productivity'
+      insights: 'Morning routines significantly impact daily productivity',
+      source: 'manual'
     },
     {
       id: 2,
@@ -47,10 +48,27 @@ const Journal = () => {
       wordCount: 38,
       gratitude: ['Online learning resources', 'Supportive community', 'Progress in skills'],
       goals: ['Build a React project', 'Master state management'],
-      insights: 'Consistent learning leads to skill development'
+      insights: 'Consistent learning leads to skill development',
+      source: 'manual'
     },
     {
       id: 3,
+      title: 'Focus Session Notes',
+      content: 'Great deep work session on the API documentation. Managed to stay focused for 45 minutes with only 1 distraction. The pomodoro technique really helps maintain concentration.',
+      mood: 'neutral',
+      tags: ['focus', 'deep-work', 'documentation'],
+      date: '2024-05-05',
+      time: '14:30',
+      wordCount: 28,
+      gratitude: ['Deep focus', 'Productive session', 'Minimal distractions'],
+      goals: ['Continue focus sessions', 'Reduce distractions'],
+      insights: 'Pomodoro technique enhances focus',
+      source: 'focus-session',
+      taskId: 'task-123',
+      sessionId: 'session-456'
+    },
+    {
+      id: 4,
       title: 'Challenging Day',
       content: 'Faced some difficult decisions today. The project requirements changed last minute, and I had to adapt quickly. While stressful, I learned that flexibility is key in project management.',
       mood: 'neutral',
@@ -60,10 +78,11 @@ const Journal = () => {
       wordCount: 42,
       gratitude: ['Team support', 'Problem-solving skills', 'Growth opportunities'],
       goals: ['Improve adaptability', 'Better planning'],
-      insights: 'Challenges often lead to personal growth'
+      insights: 'Challenges often lead to personal growth',
+      source: 'manual'
     },
     {
-      id: 4,
+      id: 5,
       title: 'Weekend Reflection',
       content: 'Had a wonderful weekend with family. We went hiking and enjoyed nature. It reminded me of the importance of work-life balance and spending quality time with loved ones.',
       mood: 'happy',
@@ -73,7 +92,8 @@ const Journal = () => {
       wordCount: 35,
       gratitude: ['Family time', 'Nature', 'Work-life balance'],
       goals: ['More outdoor activities', 'Regular family time'],
-      insights: 'Balance is essential for overall well-being'
+      insights: 'Balance is essential for overall well-being',
+      source: 'manual'
     }
   ]);
 
@@ -253,6 +273,11 @@ const Journal = () => {
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${getMoodColor(entry.mood)}`}>
               {entry.mood}
             </span>
+            {entry.source === 'focus-session' && (
+              <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                From Focus session
+              </span>
+            )}
             <div className="flex items-center space-x-1 text-xs text-gray-500">
               <Calendar size={12} />
               <span>{new Date(entry.date).toLocaleDateString()}</span>

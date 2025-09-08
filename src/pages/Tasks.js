@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -12,9 +12,12 @@ import {
   Target,
   FolderOpen,
   ArrowUpDown,
-  Trash2
+  Trash2,
+  Play,
+  MoreVertical
 } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
+import FocusButton from '../components/FocusButton';
 
 const Tasks = () => {
   const { tasks, loading, updateTask, deleteTask } = useData();
@@ -27,6 +30,8 @@ const Tasks = () => {
   const [sortBy, setSortBy] = useState('due_date');
   const [sortOrder, setSortOrder] = useState('asc');
   const [showFilters, setShowFilters] = useState(false);
+  const [activeSessions, setActiveSessions] = useState(new Set());
+  const [showContextMenu, setShowContextMenu] = useState(null);
 
   // Filter and sort tasks from DataContext
   const filteredTasks = tasks?.filter(task => {
@@ -140,6 +145,103 @@ const Tasks = () => {
   };
 
   const categories = [...new Set(tasks?.map(task => task.category) || [])];
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Only handle shortcuts when not typing in inputs
+      if (e.target.matches('input, textarea, select')) return;
+      
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        // Find the first visible task and start focus
+        const firstTask = sortedTasks[0];
+        if (firstTask) {
+          handleStartFocus(firstTask);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [sortedTasks]);
+
+  // Handle focus session start
+  const handleStartFocus = async (task) => {
+    try {
+      // Calculate planned minutes based on task schedule
+      let plannedMinutes = 50; // default
+      
+      if (task.start_at && task.end_at) {
+        const start = new Date(task.start_at);
+        const end = new Date(task.end_at);
+        const scheduledMinutes = Math.round((end - start) / (1000 * 60));
+        
+        // If task starts within ±10 minutes, use scheduled duration
+        const now = new Date();
+        const timeDiff = Math.abs(start - now) / (1000 * 60);
+        
+        if (timeDiff <= 10) {
+          plannedMinutes = scheduledMinutes;
+        }
+      }
+      
+      const response = await fetch('/api/focus/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          taskId: task.id,
+          plannedMinutes
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        // Mark task as in focus
+        setActiveSessions(prev => new Set([...prev, task.id]));
+        navigate(`/app/focus?sid=${result.sessionId}`);
+      } else {
+        const error = await response.json();
+        alert(`Failed to start focus session: ${error.message}`);
+      }
+    } catch (error) {
+      console.error('Failed to start focus:', error);
+      alert('Failed to start focus session. Please try again.');
+    }
+  };
+
+  // Add focus block to task
+  const handleAddFocusBlock = async (task) => {
+    try {
+      const now = new Date();
+      const endTime = new Date(now.getTime() + 25 * 60 * 1000); // 25 minutes from now
+      
+      updateTask(task.id, {
+        start_at: now.toISOString(),
+        end_at: endTime.toISOString()
+      });
+      
+      // Start focus session immediately
+      await handleStartFocus(task);
+    } catch (error) {
+      console.error('Failed to add focus block:', error);
+      alert('Failed to add focus block. Please try again.');
+    }
+  };
+
+  // Context menu actions
+  const contextMenuActions = [
+    {
+      label: 'Start Focus',
+      icon: Play,
+      action: (task) => handleStartFocus(task)
+    },
+    {
+      label: 'Add 25m Focus block',
+      icon: Clock,
+      action: (task) => handleAddFocusBlock(task)
+    }
+  ];
 
   if (loading) {
     return (
@@ -382,6 +484,11 @@ const Tasks = () => {
                                getDueDateStatus(task.due_date) === 'overdue' ? 'Overdue' :
                                getDueDateStatus(task.due_date) === 'soon' ? 'Soon' : task.due_date}
                             </span>
+                            {activeSessions.has(task.id) && (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200 animate-pulse">
+                                In Focus
+                              </span>
+                            )}
                           </div>
                           
                           <div className="flex items-center space-x-4 mt-3 text-xs text-gray-500">
@@ -397,6 +504,42 @@ const Tasks = () => {
                         </div>
                         
                         <div className="flex items-center space-x-2">
+                          <FocusButton 
+                            task={task} 
+                            className="text-xs px-2 py-1"
+                            onStartFocus={() => handleStartFocus(task)}
+                          />
+                          <div className="relative">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowContextMenu(showContextMenu === task.id ? null : task.id);
+                              }}
+                              className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                              title="More actions"
+                            >
+                              <MoreVertical size={16} />
+                            </button>
+                            
+                            {showContextMenu === task.id && (
+                              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                                {contextMenuActions.map((action, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      action.action(task);
+                                      setShowContextMenu(null);
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 first:rounded-t-lg last:rounded-b-lg"
+                                  >
+                                    <action.icon size={14} />
+                                    <span>{action.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();

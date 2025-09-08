@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
-const FocusButton = ({ task, className = '' }) => {
+const FocusButton = ({ task, className = '', onStartFocus }) => {
   const router = useRouter();
   const [isStarting, setIsStarting] = useState(false);
   
@@ -39,7 +39,11 @@ const FocusButton = ({ task, className = '' }) => {
       
       if (response.ok) {
         const result = await response.json();
-        router.push(`/app/focus?sid=${result.sessionId}`);
+        if (onStartFocus) {
+          onStartFocus(result);
+        } else {
+          router.push(`/app/focus?sid=${result.sessionId}`);
+        }
       } else {
         const error = await response.json();
         alert(`Failed to start focus session: ${error.message}`);
