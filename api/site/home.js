@@ -538,8 +538,8 @@ module.exports = async function handler(req, res) {
                 <p class="subtitle">${heroCopy.subtitle}</p>
                 
                 <div class="cta-buttons">
-                    <a href="/api/demo/access?utm_source=home-hero&v=${variant}" class="btn btn-primary">Open Interactive Demo</a>
-                    <a href="/api/demo/static?utm_source=home-hero&v=${variant}" class="btn btn-secondary">See Static Preview</a>
+                    <a href="/api/track/redirect?to=demo_access&src=home-hero&v=${variant}" class="btn btn-primary">Open Interactive Demo</a>
+                    <a href="/api/track/redirect?to=static_preview&src=home-hero&v=${variant}" class="btn btn-secondary">See Static Preview</a>
                 </div>
                 
                 <div class="badges">
@@ -662,7 +662,7 @@ module.exports = async function handler(req, res) {
                             <li>Weekly Review (preview)</li>
                             <li>Week Agenda (read-only)</li>
                         </ul>
-                        <a href="/api/demo/access?utm_source=home-pricing&plan=free&v=${variant}" class="btn btn-primary">Open Interactive Demo</a>
+                        <a href="/api/track/redirect?to=pricing_free&src=home-pricing&plan=free&v=${variant}" class="btn btn-primary">Open Interactive Demo</a>
                     </div>
                     <div class="pricing-card">
                         <h3>Pro (coming soon)</h3>
@@ -674,7 +674,7 @@ module.exports = async function handler(req, res) {
                             <li>Export & integrations</li>
                             <li>Priority support</li>
                         </ul>
-                        <a href="mailto:hello@theflowstateapp.com?subject=Join%20Pro%20waitlist&body=Hi%20FlowState!%20Variant%20v=${variant}" class="btn btn-secondary">Join Pro waitlist</a>
+                        <a href="/api/track/redirect?to=pro_waitlist&src=home-pricing&v=${variant}" class="btn btn-secondary">Join Pro waitlist</a>
                     </div>
                 </div>
             </div>
