@@ -144,7 +144,7 @@ const DemoLayout = ({ children, title, description, meta, variant = "1" }) => {
     </footer>
     
     <!-- Page view tracking pixel -->
-    <img src="/api/track/pixel?src=demo-${meta.page}&v=${variant}" alt="" width="1" height="1" style="position:absolute;left:-9999px;" />
+    <img src="/api/pixel?src=demo-${meta.page}&v=${variant}" alt="" width="1" height="1" style="position:absolute;left:-9999px;" />
 </body>
 </html>`;
 };

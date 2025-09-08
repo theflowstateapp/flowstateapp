@@ -742,7 +742,7 @@ module.exports = async function handler(req, res) {
     </footer>
     
     <!-- Page view tracking pixel -->
-    <img src="/api/track/pixel?src=home&v=${variant}" alt="" width="1" height="1" style="position:absolute;left:-9999px;" />
+    <img src="/api/pixel?src=home&v=${variant}" alt="" width="1" height="1" style="position:absolute;left:-9999px;" />
 </body>
 </html>`;
 
