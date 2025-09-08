@@ -1,3 +1,14 @@
+// Import demo page renderers at the top
+import { 
+  renderDemoOverviewHTML,
+  renderDemoTasksHTML,
+  renderDemoHabitsHTML,
+  renderDemoJournalHTML,
+  renderDemoReviewHTML,
+  renderDemoAgendaHTML,
+  renderDemoSettingsHTML
+} from '../lib/demo-pages.js';
+
 // bump this string each commit (or set via env in CI)
 const BUILD_ID = process.env.SITE_BUILD_ID || new Date().toISOString();
 
@@ -20,18 +31,6 @@ export default async function handler(req, res) {
       const page = (req.query.page || "overview").toString();
       
       try {
-        // Import demo page renderers
-        const demoPages = await import('../lib/demo-pages.js');
-        const { 
-          renderDemoOverviewHTML,
-          renderDemoTasksHTML,
-          renderDemoHabitsHTML,
-          renderDemoJournalHTML,
-          renderDemoReviewHTML,
-          renderDemoAgendaHTML,
-          renderDemoSettingsHTML
-        } = demoPages;
-        
         let html;
         switch (page) {
           case "overview":
