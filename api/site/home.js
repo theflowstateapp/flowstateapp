@@ -95,6 +95,19 @@ module.exports = async function handler(req, res) {
     }
 
     // Default: Return the marketing homepage HTML
+    // A/B variant logic
+    const variant = req.query.v || "1";
+    const isVariant2 = variant === "2";
+    
+    // Hero copy variants
+    const heroCopy = isVariant2 ? {
+      h1: "Type what you need. We schedule it for you.",
+      subtitle: "AI capture → PARA buckets → proposed time blocks — done."
+    } : {
+      h1: "From scattered to scheduled in 90 seconds.",
+      subtitle: "Capture naturally. We auto-sort with PARA and time-box your week."
+    };
+    
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -365,6 +378,16 @@ module.exports = async function handler(req, res) {
             color: #1e293b;
         }
         
+        .pricing-kicker {
+            text-align: center;
+            font-size: 1rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
         .pricing-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -511,12 +534,12 @@ module.exports = async function handler(req, res) {
         <!-- Hero Section -->
         <section class="hero">
             <div class="container">
-                <h1>From scattered to scheduled in 90 seconds.</h1>
-                <p class="subtitle">Capture naturally. We auto-sort with PARA and time-box your week.</p>
+                <h1>${heroCopy.h1}</h1>
+                <p class="subtitle">${heroCopy.subtitle}</p>
                 
                 <div class="cta-buttons">
-                    <a href="/api/demo/access?utm_source=home-hero" class="btn btn-primary">Open Interactive Demo</a>
-                    <a href="/api/demo/static?utm_source=home-hero" class="btn btn-secondary">See Static Preview</a>
+                    <a href="/api/demo/access?utm_source=home-hero&v=${variant}" class="btn btn-primary">Open Interactive Demo</a>
+                    <a href="/api/demo/static?utm_source=home-hero&v=${variant}" class="btn btn-secondary">See Static Preview</a>
                 </div>
                 
                 <div class="badges">
@@ -537,27 +560,27 @@ module.exports = async function handler(req, res) {
                     <div class="step">
                         <div class="step-icon">📊</div>
                         <h3>Dashboard</h3>
-                        <p>See your week at a glance with intelligent task suggestions and time blocks</p>
+                        <p>See exactly what matters today.</p>
                     </div>
                     <div class="step">
                         <div class="step-icon">✍️</div>
                         <h3>Capture</h3>
-                        <p>Type naturally in plain language. AI understands context and urgency</p>
+                        <p>Type in plain language — we parse intent, priority, and time.</p>
                     </div>
                     <div class="step">
                         <div class="step-icon">🗂️</div>
-                        <h3>Organize</h3>
-                        <p>Auto-sorted with PARA methodology: Projects, Areas, Resources, Archives</p>
+                        <h3>Organize (PARA)</h3>
+                        <p>Projects, Areas, Resources, Archives — auto-suggested.</p>
                     </div>
                     <div class="step">
                         <div class="step-icon">📅</div>
                         <h3>Plan</h3>
-                        <p>Intelligent time-boxing suggests optimal slots based on your patterns</p>
+                        <p>Accept a proposed time block or reshuffle with one tap.</p>
                     </div>
                     <div class="step">
                         <div class="step-icon">🔄</div>
                         <h3>Review</h3>
-                        <p>Weekly insights and automated planning for the next week</p>
+                        <p>Weekly summary + "Plan next week" to auto time-box.</p>
                     </div>
                 </div>
             </div>
@@ -571,32 +594,32 @@ module.exports = async function handler(req, res) {
                     <div class="feature-card">
                         <div class="feature-icon">🤖</div>
                         <h3>AI Capture</h3>
-                        <p>Natural language processing understands context, priority, and estimates time automatically</p>
+                        <p>Type naturally and we parse intent, priority, and time estimates automatically.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">📋</div>
                         <h3>Tasks (Board/List/Calendar)</h3>
-                        <p>Multiple views for different workflows. Drag-and-drop scheduling with consistent chips</p>
+                        <p>Switch between views seamlessly with drag-and-drop scheduling and consistent chips.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🔥</div>
                         <h3>Habits (90-day heatmap)</h3>
-                        <p>Visual progress tracking with streak visualization and weekly target badges</p>
+                        <p>Visual progress tracking with streak visualization and weekly target badges.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">📊</div>
                         <h3>Weekly Review (Plan next week)</h3>
-                        <p>Automated insights and intelligent scheduling for the upcoming week</p>
+                        <p>Automated insights and intelligent scheduling for the upcoming week.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">📝</div>
                         <h3>Journal & Reflection</h3>
-                        <p>Daily reflection prompts and progress tracking for continuous improvement</p>
+                        <p>Daily reflection prompts and progress tracking for continuous improvement.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">📅</div>
                         <h3>Week Agenda</h3>
-                        <p>Calendar view with time-blocked tasks and intelligent scheduling suggestions</p>
+                        <p>Calendar view with time-blocked tasks and intelligent scheduling suggestions.</p>
                     </div>
                 </div>
             </div>
@@ -608,16 +631,16 @@ module.exports = async function handler(req, res) {
                 <h2>What users say</h2>
                 <div class="testimonial-grid">
                     <div class="testimonial">
-                        <p>"Finally, a system that actually understands how I work. The AI capture is incredible - I just type what I'm thinking and it figures out the rest."</p>
-                        <div class="testimonial-author">— Sarah K., Product Manager</div>
+                        <p>"My week goes from foggy to focused in one minute."</p>
+                        <div class="testimonial-author">— Priya, PM</div>
                     </div>
                     <div class="testimonial">
-                        <p>"The PARA organization combined with time-boxing has transformed my productivity. I actually finish what I plan now."</p>
-                        <div class="testimonial-author">— Rajesh M., Software Engineer</div>
+                        <p>"Scheduling is finally the default, not a chore."</p>
+                        <div class="testimonial-author">— Alex, Founder</div>
                     </div>
                     <div class="testimonial">
-                        <p>"Love the weekly review feature. It's like having a personal productivity coach that actually learns from my patterns."</p>
-                        <div class="testimonial-author">— Priya S., Consultant</div>
+                        <p>"PARA + time-boxing clicked instantly."</p>
+                        <div class="testimonial-author">— Rohan, Designer</div>
                     </div>
                 </div>
             </div>
@@ -626,31 +649,32 @@ module.exports = async function handler(req, res) {
         <!-- Pricing -->
         <section class="pricing">
             <div class="container">
-                <h2>Simple pricing</h2>
+                <p class="pricing-kicker">Simple pricing</p>
+                <h2>Start free. Upgrade when you're ready.</h2>
                 <div class="pricing-grid">
                     <div class="pricing-card">
                         <h3>Free</h3>
-                        <div class="price">$0</div>
                         <ul>
-                            <li>Unlimited tasks and projects</li>
-                            <li>Basic AI capture</li>
-                            <li>PARA organization</li>
-                            <li>Mobile app access</li>
-                            <li>Basic analytics</li>
+                            <li>AI capture (basic)</li>
+                            <li>Tasks, Board/List/Calendar</li>
+                            <li>Habits (weekly target)</li>
+                            <li>Journal (basic)</li>
+                            <li>Weekly Review (preview)</li>
+                            <li>Week Agenda (read-only)</li>
                         </ul>
+                        <a href="/api/demo/access?utm_source=home-pricing&plan=free&v=${variant}" class="btn btn-primary">Open Interactive Demo</a>
                     </div>
-                    <div class="pricing-card featured">
-                        <h3>Pro</h3>
-                        <div class="price">$9/month</div>
+                    <div class="pricing-card">
+                        <h3>Pro (coming soon)</h3>
                         <ul>
-                            <li>Everything in Free</li>
-                            <li>Advanced AI suggestions</li>
-                            <li>Automated time-boxing</li>
-                            <li>Weekly review insights</li>
-                            <li>Habit heatmaps</li>
+                            <li>Advanced AI capture & PARA suggestions</li>
+                            <li>Auto time-boxing + reshuffle</li>
+                            <li>Habits 90-day heatmap</li>
+                            <li>Weekly Review → Plan next week (auto-schedule)</li>
+                            <li>Export & integrations</li>
                             <li>Priority support</li>
-                            <li>Data export</li>
                         </ul>
+                        <a href="mailto:hello@theflowstateapp.com?subject=Join%20Pro%20waitlist&body=Hi%20FlowState!%20Variant%20v=${variant}" class="btn btn-secondary">Join Pro waitlist</a>
                     </div>
                 </div>
             </div>
@@ -711,6 +735,7 @@ module.exports = async function handler(req, res) {
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 FlowState. All rights reserved.</p>
+                <p style="margin-top: 8px; font-size: 0.9rem; color: #64748b;">Data export and account deletion available in Settings. UPI/Razorpay (IN) & PayPal (USD) supported at launch.</p>
                 <small style="color: #94a3b8;">Build: ${BUILD_ID}</small>
             </div>
         </div>
