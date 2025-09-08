@@ -1,5 +1,5 @@
-const { startOfDay, endOfDay, startOfWeek, endOfWeek } = require('date-fns');
-const { utcToZonedTime, zonedTimeToUtc } = require('date-fns-tz');
+const { startOfDay, endOfDay, startOfWeek, endOfWeek } = require('./date-fns.js');
+const { utcToZonedTime, zonedTimeToUtc } = require('./date-fns-tz.js');
 const { supabaseAdmin } = require('./supabase.js');
 const { withDbRetry } = require('./retry.js');
 const { getCompletedTasksForISTWeek, getCarryOverTasksForISTWeek, getScheduledTotalsForWeek } = require('./demo-metrics.js');
