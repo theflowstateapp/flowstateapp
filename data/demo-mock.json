@@ -1,0 +1,93 @@
+{
+  "workspace": { 
+    "id": "demo-mock", 
+    "name": "FlowState Demo (Mock)", 
+    "is_demo": true, 
+    "timezone": "Asia/Kolkata" 
+  },
+  "projects": [
+    { "id": "p1", "name": "Website Launch" },
+    { "id": "p2", "name": "Growth Experiments" }
+  ],
+  "areas": [
+    { "id": "a1", "name": "Health" },
+    { "id": "a2", "name": "Finances" }
+  ],
+  "tasks": [
+    { 
+      "id":"t1",
+      "title":"Finish landing hero",
+      "status":"NEXT",
+      "priority":"HIGH",
+      "estimateMins":45,
+      "context":"Deep Work",
+      "projectId":"p1",
+      "dueShiftDays":0,
+      "startShiftMins":90,
+      "durationMins":45 
+    },
+    { 
+      "id":"t2",
+      "title":"Email partner re: UTM",
+      "status":"IN_PROGRESS",
+      "priority":"MEDIUM",
+      "estimateMins":20,
+      "context":"Admin",
+      "projectId":"p2",
+      "dueShiftDays":0,
+      "startShiftMins":210,
+      "durationMins":30 
+    },
+    { 
+      "id":"t3",
+      "title":"Budget review Sept",
+      "status":"NEXT",
+      "priority":"URGENT",
+      "estimateMins":40,
+      "context":"Admin",
+      "areaId":"a2",
+      "dueShiftDays":1 
+    },
+    { 
+      "id":"t4",
+      "title":"Meditation session",
+      "status":"NEXT",
+      "priority":"LOW",
+      "estimateMins":15,
+      "context":"Deep Work",
+      "areaId":"a1",
+      "dueShiftDays":2 
+    }
+  ],
+  "habits": [
+    { "id":"h1","name":"Daily Exercise","targetPerWeek":3 },
+    { "id":"h2","name":"Morning Meditation","targetPerWeek":5 },
+    { "id":"h3","name":"Read Books","targetPerWeek":4 }
+  ],
+  "habitLogs": [
+    { "habitId":"h1","dayShift":0 }, 
+    { "habitId":"h1","dayShift":-1 }, 
+    { "habitId":"h1","dayShift":-3 },
+    { "habitId":"h2","dayShift":0 }, 
+    { "habitId":"h2","dayShift":-2 }, 
+    { "habitId":"h2","dayShift":-4 }, 
+    { "habitId":"h2","dayShift":-5 },
+    { "habitId":"h3","dayShift":-1 }, 
+    { "habitId":"h3","dayShift":-2 }, 
+    { "habitId":"h3","dayShift":-6 }
+  ],
+  "journal": [
+    { 
+      "id":"j1",
+      "dayShift":0, 
+      "mood":"🙂",
+      "excerpt":"Shipped homepage copy and tracked redirects." 
+    },
+    { 
+      "id":"j2",
+      "dayShift":-1,
+      "mood":"😌",
+      "excerpt":"Blocked 2 deep-work sessions; reduced Slack time." 
+    }
+  ]
+}

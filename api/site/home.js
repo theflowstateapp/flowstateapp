@@ -61,6 +61,10 @@ module.exports = async function handler(req, res) {
             break;
         }
         
+        // Detect mock mode from HTML content
+        const mockMode = html.includes('Demo Safe Mode (mock data)');
+        res.setHeader("X-Demo-Mode", mockMode ? "mock" : "live");
+        
         return res.status(200).send(html);
       } catch (error) {
         console.error('DEMO_ROUTER: Error rendering demo page:', error);
