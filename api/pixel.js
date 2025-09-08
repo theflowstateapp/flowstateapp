@@ -1,5 +1,3 @@
-const { logEventSafe } = require("../../lib/analytics.js");
-
 function ip(req){ 
   return req.headers["x-forwarded-for"]?.split(",")[0]?.trim() 
       || req.headers["x-real-ip"] 
@@ -22,8 +20,8 @@ module.exports = async function handler(req, res) {
 
     const { page, v, src } = req.query || {};
     
-    // Fire-and-forget log
-    logEventSafe({
+    // Fire-and-forget log (simplified for now)
+    console.log("[analytics] View event:", {
       type: "view",
       src: src ? String(src) : "page",
       variant: v ? String(v) : null,
