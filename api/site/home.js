@@ -32,6 +32,7 @@ module.exports = async function handler(req, res) {
       const page = String((req.query.page || "overview"));
       const force = req.query.mode === "mock" ? "mock" : (req.query.mode === "live" ? "live" : undefined);
       const diag = req.query.diag === "1";
+      const variant = req.query.v || "1";
       
       function diagWrap(step, fn) {
         try { return fn(); } catch (e) { throw new Error(`[STEP:${step}] ${e?.message || e}`); }
