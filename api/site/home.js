@@ -1,5 +1,5 @@
 // Import demo page renderers at the top
-import { 
+const { 
   renderDemoOverviewHTML,
   renderDemoTasksHTML,
   renderDemoHabitsHTML,
@@ -7,12 +7,12 @@ import {
   renderDemoReviewHTML,
   renderDemoAgendaHTML,
   renderDemoSettingsHTML
-} from '../lib/demo-pages.js';
+} = require('../lib/demo-pages.js');
 
 // bump this string each commit (or set via env in CI)
 const BUILD_ID = process.env.SITE_BUILD_ID || new Date().toISOString();
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     if (req.method !== "GET" && req.method !== "POST" && req.method !== "OPTIONS") {
       return res.status(405).json({ ok: false, error: "Method Not Allowed" });
