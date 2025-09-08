@@ -36,28 +36,28 @@ module.exports = async function handler(req, res) {
         let html;
         switch (page) {
           case "overview":
-            html = await renderDemoOverviewHTML(meta);
+            html = await renderDemoOverviewHTML(meta, variant);
             break;
           case "tasks":
-            html = await renderDemoTasksHTML(meta);
+            html = await renderDemoTasksHTML(meta, variant);
             break;
           case "habits":
-            html = await renderDemoHabitsHTML(meta);
+            html = await renderDemoHabitsHTML(meta, variant);
             break;
           case "journal":
-            html = await renderDemoJournalHTML(meta);
+            html = await renderDemoJournalHTML(meta, variant);
             break;
           case "review":
-            html = await renderDemoReviewHTML(meta);
+            html = await renderDemoReviewHTML(meta, variant);
             break;
           case "agenda":
-            html = await renderDemoAgendaHTML(meta);
+            html = await renderDemoAgendaHTML(meta, variant);
             break;
           case "settings":
-            html = await renderDemoSettingsHTML(meta);
+            html = await renderDemoSettingsHTML(meta, variant);
             break;
           default:
-            html = await renderDemoOverviewHTML(meta);
+            html = await renderDemoOverviewHTML(meta, variant);
             break;
         }
         
@@ -740,6 +740,9 @@ module.exports = async function handler(req, res) {
             </div>
         </div>
     </footer>
+    
+    <!-- Page view tracking pixel -->
+    <img src="/api/track/pixel?src=home&v=${variant}" alt="" width="1" height="1" style="position:absolute;left:-9999px;" />
 </body>
 </html>`;
 
