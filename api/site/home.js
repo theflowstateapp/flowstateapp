@@ -29,72 +29,62 @@ module.exports = async function handler(req, res) {
     if (req.query.route === 'demo') {
       const { resolveDemoPageMeta, renderDemoOverviewHTML, renderDemoTasksHTML, renderDemoHabitsHTML, renderDemoJournalHTML, renderDemoReviewHTML, renderDemoAgendaHTML, renderDemoSettingsHTML } = getDemoRenderers();
       
-      const page = (req.query.page || "overview").toString();
-      const meta = resolveDemoPageMeta(page);
+      const page = String((req.query.page || "overview"));
+      const force = req.query.mode === "mock" ? "mock" : (req.query.mode === "live" ? "live" : undefined);
+      const diag = req.query.diag === "1";
+      
+      function diagWrap(step, fn) {
+        try { return fn(); } catch (e) { throw new Error(`[STEP:${step}] ${e?.message || e}`); }
+      }
+      
+      // Resolve meta
+      const meta = diagWrap("meta", () => resolveDemoPageMeta(page));
       
       try {
         let html;
-        switch (page) {
-          case "overview":
-            html = await renderDemoOverviewHTML(meta, variant);
-            break;
-          case "tasks":
-            html = await renderDemoTasksHTML(meta, variant);
-            break;
-          case "habits":
-            html = await renderDemoHabitsHTML(meta, variant);
-            break;
-          case "journal":
-            html = await renderDemoJournalHTML(meta, variant);
-            break;
-          case "review":
-            html = await renderDemoReviewHTML(meta, variant);
-            break;
-          case "agenda":
-            html = await renderDemoAgendaHTML(meta, variant);
-            break;
-          case "settings":
-            html = await renderDemoSettingsHTML(meta, variant);
-            break;
-          default:
-            html = await renderDemoOverviewHTML(meta, variant);
-            break;
-        }
+        html = await diagWrap("render", async () => {
+          switch (page) {
+            case "tasks":
+              return await renderDemoTasksHTML(meta, { force, variant });
+            case "habits":
+              return await renderDemoHabitsHTML(meta, { force, variant });
+            case "journal":
+              return await renderDemoJournalHTML(meta, { force, variant });
+            case "review":
+              return await renderDemoReviewHTML(meta, { force, variant });
+            case "agenda":
+              return await renderDemoAgendaHTML(meta, { force, variant });
+            case "settings":
+              return await renderDemoSettingsHTML(meta, { force, variant });
+            default:
+              return await renderDemoOverviewHTML(meta, { force, variant });
+          }
+        });
         
         // Detect mock mode from HTML content
-        const mockMode = html.includes('Demo Safe Mode (mock data)');
+        const mockMode = html.includes('data-demo-mode="mock"');
         res.setHeader("X-Demo-Mode", mockMode ? "mock" : "live");
         
         return res.status(200).send(html);
-      } catch (error) {
-        console.error('DEMO_ROUTER: Error rendering demo page:', error);
-        const canonical = `https://theflowstateapp.com${meta.canonicalPath}`;
-        const title = meta.title || "FlowState Demo";
-        const fallbackHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    <meta name="robots" content="index,follow">
-    <link rel="canonical" href="${canonical}">
-    <style>
-        body { font-family: system-ui; padding: 40px; max-width: 600px; margin: 0 auto; text-align: center; }
-        .error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 20px; border-radius: 8px; margin: 20px 0; }
-        .cta-button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 10px; }
-    </style>
-</head>
-<body>
-    <h1>Demo Temporarily Unavailable</h1>
-    <div class="error">
-        <strong>Error:</strong> We're experiencing technical difficulties. Please try again in a moment.
-    </div>
-    <a href="/api/demo/access" class="cta-button">Open Interactive Demo</a>
-    <a href="/api/demo/static" class="cta-button">See Static Preview</a>
-    <small style="display: block; margin-top: 20px; color: #64748b;">Build: ${BUILD_ID}</small>
-</body>
-</html>`;
-        return res.status(200).send(fallbackHtml);
+      } catch (err) {
+        const msg = String(err?.message || err);
+        // Build a graceful fallback INCLUDING the diagnostic info when diag=1
+        const canonical = "https://theflowstateapp.com" + (meta?.canonicalPath || "/demo");
+        const title = meta?.title || "FlowState Demo";
+        const diagBox = diag ? `<pre style="background:#fff3cd;color:#856404;padding:12px;border-radius:8px;white-space:pre-wrap;">${msg}</pre>` : "";
+        const html = `<!doctype html><html lang="en"><head>
+          <meta charset="utf-8"><title>${title}</title>
+          <link rel="canonical" href="${canonical}">
+          <meta name="robots" content="index,follow">
+          </head><body style="font-family:system-ui;padding:24px;max-width:960px;margin:auto;">
+            <h1>Demo temporarily unavailable</h1>
+            <p>We couldn't render this section right now.</p>
+            ${diagBox}
+            <p><a href="/api/demo/static">See static preview →</a> &nbsp; <a href="/api/demo/access">Open interactive demo →</a></p>
+          </body></html>`;
+        res.setHeader("X-Demo-Error", msg.slice(0, 200));
+        res.setHeader("X-Demo-Mode", "error");
+        return res.status(200).send(html);
       }
     }
 
