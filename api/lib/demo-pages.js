@@ -8,25 +8,6 @@ const { getNextSuggestedWithProposal } = require('./next-suggested.js');
 
 const IST = "Asia/Kolkata";
 
-function resolveDemoPageMeta(page) {
-  const map = {
-    overview: { path: "demo",           title: "FlowState Demo — Overview" },
-    tasks:    { path: "demo/tasks",     title: "FlowState Demo — Tasks" },
-    habits:   { path: "demo/habits",    title: "FlowState Demo — Habits" },
-    journal:  { path: "demo/journal",   title: "FlowState Demo — Journal" },
-    review:   { path: "demo/review",    title: "FlowState Demo — Weekly Review" },
-    agenda:   { path: "demo/agenda",    title: "FlowState Demo — Week Agenda" },
-    settings: { path: "demo/settings",  title: "FlowState Demo — Settings" }
-  };
-  const fallback = { path: "demo", title: "FlowState Demo" };
-  const chosen = map[page] || fallback;
-  return {
-    page,
-    canonicalPath: `/${chosen.path}`,
-    title: chosen.title
-  };
-}
-
 // Utility functions
 const escapeHtml = (str) => {
   if (!str) return '';
@@ -51,19 +32,16 @@ const createSectionHeading = (level, id, title, emoji = '') => {
 };
 
 // Demo Layout Component
-const DemoLayout = ({ children, title, description, meta }) => {
-  const canonicalUrl = `https://theflowstateapp.com${meta.canonicalPath}`;
-  const pageTitle = meta.title || title;
-  
+const DemoLayout = ({ children, title, description, canonicalPath, utmSource }) => {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${escapeHtml(pageTitle)}</title>
+    <title>${escapeHtml(title)} - FlowState Demo</title>
     <meta name="description" content="${escapeHtml(description)}">
     <meta name="robots" content="index,follow">
-    <link rel="canonical" href="${canonicalUrl}">
+    <link rel="canonical" href="https://theflowstateapp.com${canonicalPath}">
     <style>
       body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #334155; line-height: 1.6; }
       .visually-hidden-focusable { position: absolute; left: -9999px; }
@@ -111,7 +89,7 @@ const DemoLayout = ({ children, title, description, meta }) => {
             <div class="container">
                 <h1>${escapeHtml(title)}</h1>
                 <p>${escapeHtml(description)}</p>
-                        <a href="/api/demo/access?utm_source=demo-${meta.page}" class="cta-button">Open Interactive Demo</a>
+                <a href="/api/demo/access${utmSource ? '?utm_source=' + utmSource : ''}" class="cta-button">Open Interactive Demo</a>
                 <a href="/api/demo/static" class="cta-button">See Static Preview</a>
             </div>
         </div>
@@ -230,7 +208,7 @@ const getHabitLogs = async (workspaceId) => {
 };
 
 // Demo Page Renderers
-async function renderDemoOverviewHTML(meta) {
+async function renderDemoOverviewHTML() {
   try {
     const workspace = await getDemoWorkspace();
     const tasks = await getTasksForISTWeek(workspace.id);
@@ -310,7 +288,8 @@ async function renderDemoOverviewHTML(meta) {
       children,
       title: 'Dashboard Overview',
       description: 'FlowState dashboard with intelligent task suggestions and weekly metrics',
-      meta
+      canonicalPath: '/demo',
+      utmSource: 'demo-overview'
     });
   } catch (error) {
     console.error('DEMO_OVERVIEW: Error generating overview:', error);
@@ -326,13 +305,12 @@ async function renderDemoOverviewHTML(meta) {
         </div>
       `,
       title: 'Overview Demo - Error',
-      description: 'FlowState overview demo - temporarily unavailable',
-      meta
+      description: 'FlowState overview demo - temporarily unavailable'
     });
   }
 }
 
-async function renderDemoTasksHTML(meta) {
+async function renderDemoTasksHTML() {
   try {
     const workspace = await getDemoWorkspace();
     const tasks = await getTasksForISTWeek(workspace.id);
@@ -407,7 +385,8 @@ async function renderDemoTasksHTML(meta) {
       children,
       title: 'Tasks',
       description: 'FlowState task management with multiple views and intelligent scheduling',
-      meta
+      canonicalPath: '/demo/tasks',
+      utmSource: 'demo-tasks'
     });
   } catch (error) {
     console.error('DEMO_TASKS: Error generating tasks page:', error);
@@ -423,13 +402,12 @@ async function renderDemoTasksHTML(meta) {
         </div>
       `,
       title: 'Tasks Demo - Error',
-      description: 'FlowState tasks demo - temporarily unavailable',
-      meta
+      description: 'FlowState tasks demo - temporarily unavailable'
     });
   }
 }
 
-async function renderDemoHabitsHTML(meta) {
+async function renderDemoHabitsHTML() {
   try {
     const workspace = await getDemoWorkspace();
     const habitLogs = await getHabitLogs(workspace.id);
@@ -496,7 +474,8 @@ async function renderDemoHabitsHTML(meta) {
       children,
       title: 'Habits',
       description: 'FlowState habit tracking with 90-day heatmaps and weekly targets',
-      meta
+      canonicalPath: '/demo/habits',
+      utmSource: 'demo-habits'
     });
   } catch (error) {
     console.error('DEMO_HABITS: Error generating habits page:', error);
@@ -512,13 +491,12 @@ async function renderDemoHabitsHTML(meta) {
         </div>
       `,
       title: 'Habits Demo - Error',
-      description: 'FlowState habits demo - temporarily unavailable',
-      meta
+      description: 'FlowState habits demo - temporarily unavailable'
     });
   }
 }
 
-async function renderDemoJournalHTML(meta) {
+async function renderDemoJournalHTML() {
   try {
     const children = `
       ${createSectionHeading(2, 'today-entry', 'Today\'s Entry', '📝')}
@@ -554,7 +532,8 @@ async function renderDemoJournalHTML(meta) {
       children,
       title: 'Journal & Reflection',
       description: 'FlowState journaling and reflection for continuous improvement',
-      meta
+      canonicalPath: '/demo/journal',
+      utmSource: 'demo-journal'
     });
   } catch (error) {
     console.error('DEMO_JOURNAL: Error generating journal page:', error);
@@ -570,13 +549,12 @@ async function renderDemoJournalHTML(meta) {
         </div>
       `,
       title: 'Journal Demo - Error',
-      description: 'FlowState journal demo - temporarily unavailable',
-      meta
+      description: 'FlowState journal demo - temporarily unavailable'
     });
   }
 }
 
-async function renderDemoReviewHTML(meta) {
+async function renderDemoReviewHTML() {
   try {
     const workspace = await getDemoWorkspace();
     const completedTasks = await getCompletedTasksForISTWeek(workspace.id);
@@ -641,7 +619,8 @@ async function renderDemoReviewHTML(meta) {
       children,
       title: 'Weekly Review',
       description: 'FlowState weekly review with automated insights and next week planning',
-      meta
+      canonicalPath: '/demo/review',
+      utmSource: 'demo-review'
     });
   } catch (error) {
     console.error('DEMO_REVIEW: Error generating review page:', error);
@@ -657,13 +636,12 @@ async function renderDemoReviewHTML(meta) {
         </div>
       `,
       title: 'Review Demo - Error',
-      description: 'FlowState review demo - temporarily unavailable',
-      meta
+      description: 'FlowState review demo - temporarily unavailable'
     });
   }
 }
 
-async function renderDemoAgendaHTML(meta) {
+async function renderDemoAgendaHTML() {
   try {
     const workspace = await getDemoWorkspace();
     const tasks = await getTasksForISTWeek(workspace.id);
@@ -724,7 +702,8 @@ async function renderDemoAgendaHTML(meta) {
       children,
       title: 'Week Agenda',
       description: 'FlowState calendar with time-blocked tasks and intelligent scheduling',
-      meta
+      canonicalPath: '/demo/agenda',
+      utmSource: 'demo-agenda'
     });
   } catch (error) {
     console.error('DEMO_AGENDA: Error generating agenda page:', error);
@@ -740,13 +719,12 @@ async function renderDemoAgendaHTML(meta) {
         </div>
       `,
       title: 'Agenda Demo - Error',
-      description: 'FlowState agenda demo - temporarily unavailable',
-      meta
+      description: 'FlowState agenda demo - temporarily unavailable'
     });
   }
 }
 
-async function renderDemoSettingsHTML(meta) {
+async function renderDemoSettingsHTML() {
   try {
     const children = `
       ${createSectionHeading(2, 'workspace-prefs', 'Workspace Preferences', '⚙️')}
@@ -795,7 +773,8 @@ async function renderDemoSettingsHTML(meta) {
       children,
       title: 'Settings',
       description: 'FlowState settings and preferences configuration',
-      meta
+      canonicalPath: '/demo/settings',
+      utmSource: 'demo-settings'
     });
   } catch (error) {
     console.error('DEMO_SETTINGS: Error generating settings page:', error);
@@ -811,14 +790,12 @@ async function renderDemoSettingsHTML(meta) {
         </div>
       `,
       title: 'Settings Demo - Error',
-      description: 'FlowState settings demo - temporarily unavailable',
-      meta
+      description: 'FlowState settings demo - temporarily unavailable'
     });
   }
 }
 
 module.exports = {
-  resolveDemoPageMeta,
   renderDemoOverviewHTML,
   renderDemoTasksHTML,
   renderDemoHabitsHTML,

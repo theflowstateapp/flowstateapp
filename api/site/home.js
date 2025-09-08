@@ -8,10 +8,10 @@ const {
   renderDemoReviewHTML,
   renderDemoAgendaHTML,
   renderDemoSettingsHTML
-} = require('./lib/demo-pages.js');
+} = require('../lib/demo-pages.js');
 
 // bump this string each commit (or set via env in CI)
-const BUILD_ID = process.env.SITE_BUILD_ID || new Date().toISOString() + '-canonical-fix';
+const BUILD_ID = process.env.SITE_BUILD_ID || new Date().toISOString();
 
 module.exports = async function handler(req, res) {
   try {
