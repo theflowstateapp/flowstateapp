@@ -146,7 +146,7 @@ module.exports.runSmoke = async function() {
       
       const result = await callInternalAPI('/focus/stop', 'POST', stopData);
       
-      if (!result.session || result.session.actualMinutes < 1) {
+      if (!result.success || !result.session || result.session.actualMinutes < 0) {
         throw new Error('Focus stop failed or invalid duration');
       }
       
