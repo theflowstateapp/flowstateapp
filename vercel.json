@@ -16,6 +16,21 @@
     { "source": "/demo/settings",   "destination": "/api/site/home?route=demo&page=settings" },
     { "source": "/demo/calendar",   "destination": "/api/site/home?route=demo&page=agenda" },
 
+    { "source": "/app",             "destination": "/api/site/home?route=app&page=dashboard" },
+    { "source": "/app/",            "destination": "/api/site/home?route=app&page=dashboard" },
+    { "source": "/app/capture",     "destination": "/api/site/home?route=app&page=capture" },
+    { "source": "/app/tasks",       "destination": "/api/site/home?route=app&page=tasks" },
+    { "source": "/app/focus",       "destination": "/api/site/home?route=app&page=focus" },
+    { "source": "/app/agenda",      "destination": "/api/site/home?route=app&page=agenda" },
+    { "source": "/app/habits",      "destination": "/api/site/home?route=app&page=habits" },
+    { "source": "/app/journal",     "destination": "/api/site/home?route=app&page=journal" },
+    { "source": "/app/review",      "destination": "/api/site/home?route=app&page=review" },
+    { "source": "/app/settings",    "destination": "/api/site/home?route=app&page=settings" },
+    { "source": "/app/calendar",    "destination": "/api/site/home?route=app&page=agenda" },
+
+    { "source": "/dashboard",       "destination": "/api/site/home?route=app&page=dashboard" },
+    { "source": "/dashboard/*",     "destination": "/api/site/home?route=app&page=dashboard" },
+
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
 }
