@@ -6,21 +6,15 @@ import { UserAnalytics } from '../lib/userAnalytics';
 import { TourUtils } from '../utils/tourUtils';
 import AppShell from './AppShell';
 import Redirect from './Redirect';
-import OnboardingTour from './OnboardingTour';
-import NotificationSystem from './NotificationSystem';
-import { QuickFeedback } from './FeedbackModal';
 import ErrorBoundary from './ErrorBoundary';
 import AIAssistant from '../pages/AIAssistant';
 import Analytics from '../pages/Analytics';
 import VoiceCapture from '../pages/VoiceCapture';
 import Notes from '../pages/Notes';
-import Calendar from '../pages/Calendar';
-import AdvancedCalendar from '../pages/AdvancedCalendar';
 import FocusPage from '../pages/FocusPage';
 import NextActionsPage from '../pages/NextActionsPage';
 import FocusModePage from '../pages/FocusModePage';
 import DailyShutdown from '../pages/DailyShutdown';
-import DemoBanner from './DemoBanner';
 import HomePage from '../pages/HomePage';
 import DashboardNew from '../pages/DashboardNew';
 import WeekAgendaPage from '../pages/WeekAgendaPage';
@@ -39,20 +33,16 @@ import Tasks from '../pages/Tasks';
 import Projects from '../pages/Projects';
 import Areas from '../pages/Areas';
 import Resources from '../pages/Resources';
-import Archives from '../pages/Archives';
 import Health from '../pages/Health';
 import Learning from '../pages/Learning';
 import Relationships from '../pages/Relationships';
-import TimeManagement from '../pages/TimeManagement';
 import Finance from '../pages/Finance';
-import Knowledge from '../pages/Knowledge';
 import Journal from '../pages/Journal';
 import Habits from '../pages/Habits';
 import Workouts from '../pages/Workouts';
 import Meals from '../pages/Meals';
 import Goals from '../pages/Goals';
 import Review from '../pages/Review';
-import System from '../pages/System';
 import SettingsPage from '../pages/Settings';
 import Help from '../pages/Help';
 import IntegrationsPage from '../pages/IntegrationsPage';
@@ -61,8 +51,7 @@ import ProductAnalyticsDashboard from '../pages/ProductAnalyticsDashboard';
 import QuickCapture from '../pages/QuickCapture';
 
 const AppLayout = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const location = useLocation();
   const [onboardingStartTime, setOnboardingStartTime] = useState(null);
 
@@ -84,8 +73,8 @@ const AppLayout = () => {
     }
   }, [user]);
 
-  // Check if this is a demo
-  const isDemo = location.pathname.startsWith('/demo');
+  // Check if this is a demo (currently unused)
+  // const isDemo = location.pathname.startsWith('/demo');
 
   if (isLegacyUI) {
     // Render a minimal "legacy" shell for temporary rollback

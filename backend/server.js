@@ -949,6 +949,23 @@ const integrationController = new IntegrationController();
 // Integration management routes
 app.use('/api/integrations', integrationController.router);
 
+// Analytics endpoint for frontend
+app.get('/api/analytics', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      pageViews: 0,
+      userEngagement: 0,
+      tasksCreated: 0,
+      projectsCreated: 0,
+      goalsSet: 0,
+      habitsTracked: 0,
+      returnVisits: 0
+    },
+    message: 'Analytics endpoint - mock data for demo'
+  });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
