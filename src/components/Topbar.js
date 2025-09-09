@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Topbar = () => {
   const [captureInput, setCaptureInput] = useState('');
@@ -13,64 +14,49 @@ const Topbar = () => {
     setIsCapturing(true);
     
     try {
-      // Step 1: Capture the input
-      const captureResponse = await fetch('/api/capture', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: captureInput.trim() })
-      });
-      
-      if (!captureResponse.ok) {
-        throw new Error('Capture failed');
-      }
-      
-      const captureData = await captureResponse.json();
-      
-      // Step 2: Propose scheduling
-      const proposeResponse = await fetch('/api/schedule/propose', {
+      // Use the backend capture endpoint
+      const response = await fetch('/api/capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          taskId: captureData.taskId,
-          strategy: 'mornings'
+          text: captureInput.trim(),
+          type: 'task'
         })
       });
       
-      if (!proposeResponse.ok) {
-        throw new Error('Proposal failed');
+      if (!response.ok) {
+        throw new Error('Capture failed');
       }
       
-      const proposeData = await proposeResponse.json();
+      const result = await response.json();
       
-      // Step 3: Create task
-      const createResponse = await fetch('/api/tasks/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: captureData.parsed.title,
-          priority: captureData.parsed.priority,
-          estimateMins: captureData.parsed.estimateMins,
-          context: captureData.parsed.context,
-          dueAt: captureData.parsed.dueAt,
-          proposal: proposeData.proposal
-        })
-      });
-      
-      if (!createResponse.ok) {
-        throw new Error('Task creation failed');
+      if (!result.success) {
+        throw new Error(result.error || 'Capture failed');
       }
       
-      const taskData = await createResponse.json();
+      // Store in localStorage for demo purposes
+      const existingTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+      const newTask = {
+        ...result.data,
+        id: Date.now().toString()
+      };
+      existingTasks.push(newTask);
+      localStorage.setItem('tasks', JSON.stringify(existingTasks));
       
       // Clear input and show success
       setCaptureInput('');
+      
+      toast.success('Task captured successfully!', {
+        icon: '✅',
+        duration: 3000,
+      });
       
       // Navigate to tasks page to show the new task
       navigate('/app/tasks');
       
     } catch (error) {
       console.error('Global capture failed:', error);
-      // You could show a toast notification here
+      toast.error('Failed to capture task. Please try again.');
     } finally {
       setIsCapturing(false);
     }

@@ -966,6 +966,47 @@ app.get('/api/analytics', (req, res) => {
   });
 });
 
+// Global capture endpoint
+app.post('/api/capture', async (req, res) => {
+  try {
+    const { text, type = 'task' } = req.body;
+    
+    if (!text || !text.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Text is required for capture'
+      });
+    }
+    
+    // Parse the captured text (simple parsing for demo)
+    const parsedData = {
+      title: text.trim(),
+      description: `Captured: ${text.trim()}`,
+      type: type,
+      priority: text.toLowerCase().includes('urgent') || text.toLowerCase().includes('asap') ? 'High' : 'Medium',
+      status: 'Not Started',
+      created_at: new Date().toISOString(),
+      user_id: 'demo-user-1'
+    };
+    
+    // In a real app, you'd save this to your database
+    // For demo, we'll just return the parsed data
+    
+    res.json({
+      success: true,
+      data: parsedData,
+      message: 'Item captured successfully'
+    });
+    
+  } catch (error) {
+    console.error('Capture error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to capture item'
+    });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
