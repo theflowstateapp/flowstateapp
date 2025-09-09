@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import {
   Menu,
   Search,
@@ -14,7 +14,9 @@ import { DataProvider } from '../contexts/DataContext';
 import { UserAnalytics } from '../lib/userAnalytics';
 import { TourUtils } from '../utils/tourUtils';
 import FlowStateLogo from './FlowStateLogo';
-import Sidebar from './Sidebar';
+import SidebarLegacy from './SidebarLegacy';
+import AppShell from './AppShell';
+import Redirect from './Redirect';
 import OnboardingTour from './OnboardingTour';
 import NotificationSystem from './NotificationSystem';
 import { QuickFeedback } from './FeedbackModal';
@@ -197,7 +199,7 @@ const AppLayout = () => {
         lg:w-64 lg:relative lg:top-0 lg:h-screen lg:z-auto
         ${sidebarOpen ? 'block' : 'hidden lg:block'}
       `}>
-        <Sidebar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <SidebarLegacy sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       </div>
 
       {/* Mobile Sidebar Overlay */}
@@ -210,11 +212,13 @@ const AppLayout = () => {
 
       {/* Main content area - Responsive */}
       <div className="flex-1 transition-all duration-300 min-h-screen w-full">
-        <main className="h-[calc(100vh-4rem)] lg:h-screen overflow-y-auto bg-gray-50 pt-16 lg:pt-0 w-full" data-testid="main-content" data-tour="welcome">
+        <AppShell>
           <ErrorBoundary>
             <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/app" element={<DashboardNew />} />
+            <Route path="/app/calendar" element={<Redirect to="/app/agenda" />} />
+            <Route path="/calendar" element={<Redirect to="/app/agenda" />} />
             <Route path="/agenda" element={<WeekAgendaPage />} />
             <Route path="/main-dashboard" element={<MainDashboard />} />
             <Route path="/ai-assistant" element={<AIAssistant />} />
@@ -284,7 +288,7 @@ const AppLayout = () => {
         
         {/* Tour completion target */}
         <div data-tour="completion" className="hidden"></div>
-        </main>
+        </AppShell>
       </div>
     </div>
     </DataProvider>

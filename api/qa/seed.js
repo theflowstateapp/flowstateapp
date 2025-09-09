@@ -10,7 +10,7 @@ const supabase = createClient(
 );
 
 // Fixed QA workspace ID
-const QA_WORKSPACE_ID = '550e8400-e29b-41d4-a716-446655440000';
+const QA_WORKSPACE_ID = 'qa-ws';
 
 // Helper to get IST time with offset
 function getISTTimeWithOffset(minutes = 0) {
@@ -39,31 +39,31 @@ module.exports = async function handler(req, res) {
 
     const counts = {};
 
-    // Ensure profile exists
+    // Ensure workspace exists
     await withDbRetry(async () => {
-      const { data: profile } = await supabase
-        .from('profiles')
+      const { data: workspace } = await supabase
+        .from('workspaces')
         .upsert({
           id: QA_WORKSPACE_ID,
-          email: 'qa-test@example.com',
-          full_name: 'QA Test User',
-          timezone: 'Asia/Kolkata'
+          name: 'QA Workspace',
+          timezone: 'Asia/Kolkata',
+          is_demo: true
         }, { onConflict: 'id' })
         .select()
         .single();
       
-      counts.profile = profile ? 1 : 0;
+      counts.workspace = workspace ? 1 : 0;
     });
 
-    // Create life areas
+    // Create areas
     await withDbRetry(async () => {
       const areas = [
-        { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Health', user_id: QA_WORKSPACE_ID },
-        { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Finances', user_id: QA_WORKSPACE_ID }
+        { id: 'a-health', name: 'Health', workspace_id: QA_WORKSPACE_ID },
+        { id: 'a-fin', name: 'Finances', workspace_id: QA_WORKSPACE_ID }
       ];
 
       const { data: areasData } = await supabase
-        .from('life_areas')
+        .from('areas')
         .upsert(areas, { onConflict: 'id' })
         .select();
       
@@ -246,7 +246,7 @@ module.exports = async function handler(req, res) {
 
     res.status(200).json({
       ok: true,
-      profileId: QA_WORKSPACE_ID,
+      workspaceId: QA_WORKSPACE_ID,
       counts
     });
 

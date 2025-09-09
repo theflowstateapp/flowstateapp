@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "FlowState - AI-powered productivity platform for peak performance",
   "private": true,
+  "SITE_BUILD_ID": "sidebar-v2-2025-01-09",
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
