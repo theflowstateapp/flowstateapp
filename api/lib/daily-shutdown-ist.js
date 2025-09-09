@@ -1,7 +1,7 @@
 // IST Helper Functions for Daily Shutdown
 // Reuses existing IST utilities and adds new ones for daily planning
 
-const { getISTNow, getISTDay, getISTTomorrowDay } = require('./lib/time-ist');
+const { getISTNow, getISTDay, getISTTomorrowDay } = require('./time-ist');
 
 // Additional IST helpers for daily shutdown
 const getISTToday = () => {
