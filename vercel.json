@@ -1,40 +1,27 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     { "source": "/", "destination": "/api/site/home" },
-
-    { "source": "/demo",            "destination": "/api/site/home?route=demo&page=overview" },
-    { "source": "/demo/",           "destination": "/api/site/home?route=demo&page=overview" },
-    { "source": "/demo/tasks",      "destination": "/api/site/home?route=demo&page=tasks" },
-    { "source": "/demo/habits",     "destination": "/api/site/home?route=demo&page=habits" },
-    { "source": "/demo/journal",    "destination": "/api/site/home?route=demo&page=journal" },
-    { "source": "/demo/review",     "destination": "/api/site/home?route=demo&page=review" },
-    { "source": "/demo/agenda",     "destination": "/api/site/home?route=demo&page=agenda" },
-    { "source": "/demo/settings",   "destination": "/api/site/home?route=demo&page=settings" },
-    { "source": "/demo/calendar",   "destination": "/api/site/home?route=demo&page=agenda" },
-
-    { "source": "/app",             "destination": "/index.html" },
-    { "source": "/app/",            "destination": "/index.html" },
-    { "source": "/app/capture",     "destination": "/index.html" },
-    { "source": "/app/tasks",       "destination": "/index.html" },
-    { "source": "/app/focus",       "destination": "/index.html" },
-    { "source": "/app/agenda",      "destination": "/index.html" },
-    { "source": "/app/habits",      "destination": "/index.html" },
-    { "source": "/app/journal",     "destination": "/index.html" },
-    { "source": "/app/review",      "destination": "/index.html" },
-    { "source": "/app/settings",    "destination": "/index.html" },
-    { "source": "/app/calendar",    "destination": "/index.html" },
-
-    { "source": "/dashboard",       "destination": "/index.html" },
-    { "source": "/app-dashboard",   "destination": "/index.html" },
-
+    { "source": "/demo", "destination": "/api/site/home?route=demo&page=overview" },
+    { "source": "/demo/", "destination": "/api/site/home?route=demo&page=overview" },
+    { "source": "/demo/tasks", "destination": "/api/site/home?route=demo&page=tasks" },
+    { "source": "/demo/habits", "destination": "/api/site/home?route=demo&page=habits" },
+    { "source": "/demo/journal", "destination": "/api/site/home?route=demo&page=journal" },
+    { "source": "/demo/review", "destination": "/api/site/home?route=demo&page=review" },
+    { "source": "/demo/agenda", "destination": "/api/site/home?route=demo&page=agenda" },
+    { "source": "/demo/settings", "destination": "/api/site/home?route=demo&page=settings" },
+    { "source": "/demo/calendar", "destination": "/api/site/home?route=demo&page=agenda" },
+    { "source": "/app", "destination": "/api/app" },
+    { "source": "/app/", "destination": "/api/app" },
+    { "source": "/app/capture", "destination": "/api/app" },
+    { "source": "/app/tasks", "destination": "/api/app" },
+    { "source": "/app/focus", "destination": "/api/app" },
+    { "source": "/app/agenda", "destination": "/api/app" },
+    { "source": "/app/habits", "destination": "/api/app" },
+    { "source": "/app/journal", "destination": "/api/app" },
+    { "source": "/app/review", "destination": "/api/app" },
+    { "source": "/app/settings", "destination": "/api/app" },
+    { "source": "/app/calendar", "destination": "/api/app" },
+    { "source": "/dashboard", "destination": "/api/app" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
 }
