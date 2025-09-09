@@ -1,0 +1,8 @@
+# QA Testing Environment Variables
+# Copy this to your .env file and set a secure random string
+
+# QA Testing Configuration
+QA_SECRET=set-a-long-random-string-for-qa-testing
+
+# Example of a secure QA_SECRET (generate your own):
+# QA_SECRET=qa_test_$(openssl rand -hex 32)

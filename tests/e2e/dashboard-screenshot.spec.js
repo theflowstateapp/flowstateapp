@@ -22,3 +22,4 @@ test('Dashboard Screenshot', async ({ page }) => {
   console.log('Screenshots saved: dashboard-current.png and dashboard-viewport.png');
 });
 
+

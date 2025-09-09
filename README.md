@@ -97,6 +97,112 @@ A comprehensive web application that serves as your personal life management sys
 4. **Open your browser**
    Navigate to `http://localhost:3000` to view the application.
 
+## 🧪 QA Testing
+
+### QA System
+
+The application includes a comprehensive QA system with production monitoring:
+
+#### QA Endpoints
+- **Reset**: `/api/qa/reset` - Cleans up test data
+- **Seed**: `/api/qa/seed` - Creates deterministic test data
+- **Smoke Test**: `/api/qa/smoke` - Runs comprehensive end-to-end test
+- **Run & Store**: `/api/qa/run` - Runs smoke test and stores results in database
+- **Latest Status**: `/api/qa/latest` - Gets most recent QA run status
+- **History**: `/api/qa/history` - Gets last N QA runs
+- **Admin Panel**: `/api/admin/qa` - HTML admin interface
+
+#### Production Monitoring
+- **GitHub Actions**: Automatic QA runs on deployment
+- **Database Storage**: All QA runs stored in `qa_runs` table
+- **App Banner**: Shows warning if QA failed in last 24 hours
+- **Build Integration**: Tracks build IDs and deployment status
+
+All QA endpoints require the `QA_SECRET` environment variable for security.
+
+### Running QA Tests
+
+1. **Set up QA secret**
+   ```bash
+   export QA_SECRET="your-long-random-string"
+   ```
+
+2. **Run QA operations**
+   ```bash
+   # Reset test data
+   npm run qa:reset
+   
+   # Seed test data
+   npm run qa:seed
+   
+   # Run smoke test (original)
+   npm run qa:smoke
+   
+   # Run smoke test and store results
+   npm run qa:run
+   
+   # Check latest QA status
+   npm run qa:latest
+   
+   # View QA history
+   npm run qa:history
+   
+   # Open admin panel
+   npm run qa:admin
+   ```
+
+3. **Run Playwright E2E tests**
+   ```bash
+   # Install Playwright browsers
+   npm run test:e2e:install
+   
+   # Run E2E tests
+   npm run test:e2e
+   
+   # Run E2E tests with browser UI
+   npm run test:e2e:headed
+   ```
+
+### QA Test Flow
+
+The smoke test validates the complete user journey:
+1. Reset → Clean test data
+2. Seed → Create test workspace and data
+3. Capture → Parse task from text
+4. Propose → Schedule task
+5. Create Task → Save to database
+6. Start Focus → Begin focus session
+7. Stop Focus → End focus session
+8. Day Summary → Get daily overview
+9. Daily Shutdown → Complete day
+10. Plan Tomorrow → Schedule next day
+11. Weekly Review → Plan next week
+12. Agenda Verify → Confirm scheduling
+
+Expected result: JSON report with ~12 steps, most showing `ok: true`.
+
+### Production Setup
+
+1. **Database Setup**
+   ```sql
+   -- Run the schema file to create qa_runs table
+   -- File: qa-runs-schema.sql
+   ```
+
+2. **GitHub Secrets**
+   - Add `QA_SECRET` to your GitHub repository secrets
+   - The GitHub Action will automatically run QA tests on deployment
+
+3. **App Integration**
+   - Use `api/lib/qa-banner.js` to add QA status banner to your app
+   - Check `api/lib/qa-integration-example.js` for integration examples
+
+4. **Comprehensive Testing**
+   ```bash
+   # Run the complete QA system test
+   ./scripts/qa-system-test.sh
+   ```
+
 ### Building for Production
 
 ```bash

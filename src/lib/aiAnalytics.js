@@ -725,3 +725,5 @@ export const aiAnalytics = new AIAnalyticsManager();
 
 export default aiAnalytics;
 
+
+

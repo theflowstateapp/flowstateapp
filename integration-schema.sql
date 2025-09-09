@@ -314,3 +314,5 @@ GROUP BY ic.id, ic.user_id, ic.provider, ic.is_active, ic.last_sync_at, ic.sync_
 -- Grant access to the view
 GRANT SELECT ON public.integration_summary TO authenticated;
 
+
+

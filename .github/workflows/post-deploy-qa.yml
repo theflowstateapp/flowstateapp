@@ -1,0 +1,73 @@
+name: Post-deploy QA
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [vercel-deployed]
+  push:
+    branches: [ main ]
+
+jobs:
+  run-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run QA Smoke Test
+        run: |
+          echo "🧪 Running QA smoke test..."
+          curl -s -X POST "https://theflowstateapp.com/api/qa/run?secret=${{ secrets.QA_SECRET }}" | tee qa_output.json
+          
+          echo "📊 QA Test Results:"
+          cat qa_output.json | jq '.'
+          
+          echo "🔍 Checking test status..."
+          TEST_OK=$(cat qa_output.json | jq -r '.report.ok // false')
+          
+          if [ "$TEST_OK" = "true" ]; then
+            echo "✅ QA smoke test PASSED"
+            exit 0
+          else
+            echo "❌ QA smoke test FAILED"
+            echo "Failed steps:"
+            cat qa_output.json | jq -r '.report.steps[]? | select(.ok == false) | "- \(.name): \(.error // "Unknown error")"'
+            exit 1
+          fi
+          
+      - name: Upload QA Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: qa-results-${{ github.run_number }}
+          path: qa_output.json
+          
+      - name: Comment on PR (if applicable)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            let qaResults = {};
+            try {
+              qaResults = JSON.parse(fs.readFileSync('qa_output.json', 'utf8'));
+            } catch (e) {
+              console.log('Could not read QA results file');
+            }
+            
+            const failedSteps = qaResults.report?.steps?.filter(s => !s.ok) || [];
+            const comment = `## 🚨 QA Smoke Test Failed
+            
+            The QA smoke test failed on this deployment. Here are the details:
+            
+            **Failed Steps:**
+            ${failedSteps.map(s => `- ❌ ${s.name}: ${s.error || 'Unknown error'}`).join('\n')}
+            
+            **Total Duration:** ${qaResults.report?.totalMs || 'N/A'}ms
+            **Build ID:** ${qaResults.report?.build_id || 'N/A'}
+            
+            Please check the [QA Admin Panel](https://theflowstateapp.com/api/admin/qa) for more details.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
