@@ -29,6 +29,7 @@
     { "source": "/app/calendar",    "destination": "/api/site/home?route=app&page=agenda" },
 
     { "source": "/dashboard",       "destination": "/api/site/home?route=app&page=dashboard" },
+    { "source": "/app-dashboard",   "destination": "/api/site/home?route=app&page=dashboard" },
 
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
