@@ -10,11 +10,13 @@ const supabase = createClient(
 
 // Fixed QA workspace and user IDs
 const QA_WORKSPACE_ID = 'qa-ws';
-const QA_USER_ID = 'qa-user-12345'; // Fixed QA user ID
+const QA_USER_ID = 'f6f735ad-aff1-4845-b4eb-1f160d304d70'; // Existing user from profiles table
+const QA_LIFE_AREA_ID = '521826d3-6cdb-4073-88e6-b4315d1c907f'; // Existing life_area from life_areas table
 
 // Helper to make internal API calls
 async function callInternalAPI(endpoint, method = 'GET', body = null) {
-  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+  // Use the production domain since VERCEL_URL might not be set in serverless functions
+  const baseUrl = 'https://theflowstateapp.com';
   const url = `${baseUrl}/api${endpoint}`;
   
   const options = {
@@ -109,7 +111,7 @@ module.exports.runSmoke = async function() {
         priority_matrix: 'Priority 2. High',
         estimated_hours: 0.5, // 30 minutes = 0.5 hours
         deadline_date: getISTTomorrow(),
-        life_area_id: 'a-health',
+        life_area_id: QA_LIFE_AREA_ID,
         user_id: QA_USER_ID
       };
       
