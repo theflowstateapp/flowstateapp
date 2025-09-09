@@ -104,11 +104,11 @@ module.exports.runSmoke = async function() {
       const taskData = {
         title: 'Book dentist appointment',
         priority: 'HIGH',
-        estimate_mins: 30,
+        estimated_hours: 0.5,
         context: 'Health',
         due_at: getISTTomorrow() + 'T17:00:00',
         workspace_id: QA_WORKSPACE_ID,
-        area_id: 'a-health'
+        life_area_id: 'a-health'
       };
       
       const { data: task, error } = await supabase
@@ -218,7 +218,7 @@ module.exports.runSmoke = async function() {
       
       const { data: tasks, error } = await supabase
         .from('tasks')
-        .select('estimate_mins, start_at, end_at')
+        .select('estimated_hours, start_at, end_at')
         .eq('workspace_id', QA_WORKSPACE_ID)
         .gte('start_at', today)
         .lte('start_at', weekEnd.toISOString().split('T')[0]);
@@ -231,7 +231,7 @@ module.exports.runSmoke = async function() {
           const end = new Date(task.end_at);
           return sum + Math.round((end - start) / (1000 * 60));
         }
-        return sum + (task.estimate_mins || 0);
+        return sum + ((task.estimated_hours || 0) * 60);
       }, 0) || 0;
       
       if (scheduledMinutes <= 0) {
