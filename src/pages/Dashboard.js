@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import DailyShutdownBanner from '../components/DailyShutdownBanner';
+import MorningBrief from '../components/MorningBrief';
 import {
   Plus, Target, CheckCircle, TrendingUp, Clock, Calendar,
   BarChart3, Activity, Star, Brain, Mic, Sparkles, 
@@ -360,6 +361,19 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Daily Shutdown Banner */}
       <DailyShutdownBanner />
+      
+      {/* Morning Brief */}
+      <div className="px-6 pt-6">
+        <MorningBrief 
+          onStartFocus={(sessionId) => {
+            // Navigate to focus page with session
+            navigate(`/app/focus?session=${sessionId}`);
+          }}
+          onDismiss={() => {
+            // Brief dismissed, no action needed
+          }}
+        />
+      </div>
       
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4 dashboard-header">
