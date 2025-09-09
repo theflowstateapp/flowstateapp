@@ -10,7 +10,7 @@ const supabase = createClient(
 );
 
 // Fixed QA workspace ID
-const QA_WORKSPACE_ID = 'qa-ws';
+const QA_WORKSPACE_ID = '550e8400-e29b-41d4-a716-446655440000';
 
 // Helper to get IST time with offset
 function getISTTimeWithOffset(minutes = 0) {
@@ -55,15 +55,15 @@ module.exports = async function handler(req, res) {
       counts.workspace = workspace ? 1 : 0;
     });
 
-    // Create areas
+    // Create life areas
     await withDbRetry(async () => {
       const areas = [
-        { id: 'a-health', name: 'Health', workspace_id: QA_WORKSPACE_ID },
-        { id: 'a-fin', name: 'Finances', workspace_id: QA_WORKSPACE_ID }
+        { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Health', user_id: QA_WORKSPACE_ID },
+        { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Finances', user_id: QA_WORKSPACE_ID }
       ];
 
       const { data: areasData } = await supabase
-        .from('areas')
+        .from('life_areas')
         .upsert(areas, { onConflict: 'id' })
         .select();
       

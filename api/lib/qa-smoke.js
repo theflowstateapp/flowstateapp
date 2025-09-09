@@ -9,7 +9,7 @@ const supabase = createClient(
 );
 
 // Fixed QA workspace ID
-const QA_WORKSPACE_ID = 'qa-ws';
+const QA_WORKSPACE_ID = '550e8400-e29b-41d4-a716-446655440000';
 
 // Helper to make internal API calls
 async function callInternalAPI(endpoint, method = 'GET', body = null) {
@@ -108,7 +108,7 @@ module.exports.runSmoke = async function() {
         priority_matrix: 'Priority 2. High',
         estimated_hours: 0.5,
         deadline_date: getISTTomorrow(),
-        life_area_id: 'a-health',
+        life_area_id: '550e8400-e29b-41d4-a716-446655440001',
         user_id: QA_WORKSPACE_ID
       };
       
