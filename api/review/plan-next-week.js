@@ -69,7 +69,7 @@ export default async function handler(req, res) {
         .select('id, name, estimated_hours, priority_matrix, deadline_date')
         .eq('user_id', userId)
         .neq('status', 'Done')
-        .lt('due_at', new Date().toISOString())
+        .lt('deadline_date', new Date().toISOString())
         .order('priority_matrix', { ascending: false })
         .limit(5);
       
@@ -86,7 +86,7 @@ export default async function handler(req, res) {
         .is('start_at', null)
         .is('end_at', null)
         .eq('priority_matrix', 'HIGH')
-        .order('due_at', { ascending: true })
+        .order('deadline_date', { ascending: true })
         .limit(3);
       
       if (result.error) throw result.error;
@@ -102,7 +102,7 @@ export default async function handler(req, res) {
         .is('start_at', null)
         .is('end_at', null)
         .eq('priority_matrix', 'MEDIUM')
-        .order('due_at', { ascending: true })
+        .order('deadline_date', { ascending: true })
         .limit(2);
       
       if (result.error) throw result.error;
