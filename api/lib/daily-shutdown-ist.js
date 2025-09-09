@@ -1,15 +1,24 @@
 // IST Helper Functions for Daily Shutdown
 // Reuses existing IST utilities and adds new ones for daily planning
 
-const { getISTNow, getISTDay, getISTTomorrowDay } = require('./time-ist');
+const { getISTWeekBounds, formatISTDate } = require('./time-ist');
 
 // Additional IST helpers for daily shutdown
 const getISTToday = () => {
-  return getISTDay(new Date());
+  const { weekStartZoned } = getISTWeekBounds(new Date());
+  return weekStartZoned.toISOString().split('T')[0];
 };
 
 const getISTTomorrow = () => {
-  return getISTTomorrowDay(new Date());
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const { weekStartZoned } = getISTWeekBounds(tomorrow);
+  return weekStartZoned.toISOString().split('T')[0];
+};
+
+const getISTNow = () => {
+  const { zonedNow } = getISTWeekBounds(new Date());
+  return zonedNow;
 };
 
 const isShutdownTime = () => {
