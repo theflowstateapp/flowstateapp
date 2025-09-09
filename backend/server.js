@@ -67,7 +67,7 @@ app.use(apiMonitoring);
 // Rate limiting - relaxed for development
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Increased limit for development
+  max: 10000, // Much higher limit for development
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -966,11 +966,20 @@ app.get('/api/analytics', (req, res) => {
   });
 });
 
+// POST analytics endpoint (for tracking)
+app.post('/api/analytics', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Analytics data received'
+  });
+});
+
 // Global capture endpoint
 app.post('/api/capture', async (req, res) => {
   try {
     const { text, type = 'task' } = req.body;
     
+    // Input validation
     if (!text || !text.trim()) {
       return res.status(400).json({
         success: false,
@@ -978,12 +987,22 @@ app.post('/api/capture', async (req, res) => {
       });
     }
     
+    if (text.length > 1000) {
+      return res.status(400).json({
+        success: false,
+        error: 'Text too long (max 1000 characters)'
+      });
+    }
+    
+    // Sanitize input
+    const sanitizedText = text.trim().substring(0, 1000);
+    
     // Parse the captured text (simple parsing for demo)
     const parsedData = {
-      title: text.trim(),
-      description: `Captured: ${text.trim()}`,
+      title: sanitizedText,
+      description: `Captured: ${sanitizedText}`,
       type: type,
-      priority: text.toLowerCase().includes('urgent') || text.toLowerCase().includes('asap') ? 'High' : 'Medium',
+      priority: sanitizedText.toLowerCase().includes('urgent') || sanitizedText.toLowerCase().includes('asap') ? 'High' : 'Medium',
       status: 'Not Started',
       created_at: new Date().toISOString(),
       user_id: 'demo-user-1'
@@ -1005,6 +1024,54 @@ app.post('/api/capture', async (req, res) => {
       error: 'Failed to capture item'
     });
   }
+});
+
+// Agenda endpoints
+app.get('/api/agenda/week', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      week: [],
+      scheduled: [],
+      available: []
+    },
+    message: 'Agenda endpoint - mock data for demo'
+  });
+});
+
+// Site analytics endpoint
+app.post('/api/site/home', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Site analytics data received'
+  });
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    success: true,
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    version: process.version
+  });
+});
+
+// System status endpoint
+app.get('/api/status', (req, res) => {
+  res.json({
+    success: true,
+    status: 'operational',
+    services: {
+      database: supabase ? 'connected' : 'disconnected',
+      stripe: stripeClient ? 'connected' : 'disconnected',
+      analytics: 'operational',
+      capture: 'operational'
+    },
+    timestamp: new Date().toISOString()
+  });
 });
 
 // 404 handler
