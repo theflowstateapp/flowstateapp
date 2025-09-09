@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import dataService from '../services/dataService';
 
 const Topbar = () => {
   const [captureInput, setCaptureInput] = useState('');
@@ -14,34 +15,22 @@ const Topbar = () => {
     setIsCapturing(true);
     
     try {
-      // Use the backend capture endpoint
-      const response = await fetch('/api/capture', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          text: captureInput.trim(),
-          type: 'task'
-        })
+      // Use the new data service to create an inbox item
+      const result = await dataService.createInboxItem({
+        content: captureInput.trim(),
+        type: 'task',
+        priority: 'medium'
       });
-      
-      if (!response.ok) {
-        throw new Error('Capture failed');
-      }
-      
-      const result = await response.json();
       
       if (!result.success) {
         throw new Error(result.error || 'Capture failed');
       }
       
-      // Store in localStorage for demo purposes
-      const existingTasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-      const newTask = {
-        ...result.data,
-        id: Date.now().toString()
-      };
-      existingTasks.push(newTask);
-      localStorage.setItem('tasks', JSON.stringify(existingTasks));
+      // Track the event
+      await dataService.trackEvent('task_captured', {
+        content: captureInput.trim(),
+        method: 'global_capture'
+      });
       
       // Clear input and show success
       setCaptureInput('');

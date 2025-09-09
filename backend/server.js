@@ -12,6 +12,8 @@ const { logger, apiMonitoring, systemMonitoring, monitorDatabase } = require('./
 
 // Import authentication system
 const authRoutes = require('./src/routes/auth');
+const dataRoutes = require('./src/routes/data');
+const dbInitRoutes = require('./src/routes/db-init');
 const { authenticateToken, optionalAuth } = require('./src/middleware/auth');
 
 require('dotenv').config();
@@ -112,6 +114,12 @@ app.use(limiter);
 
 // Authentication routes (comprehensive system)
 app.use('/api/auth', authRoutes);
+
+// Data routes (comprehensive CRUD operations)
+app.use('/api/data', dataRoutes);
+
+// Database initialization routes
+app.use('/api/db', dbInitRoutes);
 
 // OpenAI specific rate limiting
 const openaiLimiter = rateLimit({
