@@ -106,10 +106,6 @@ module.exports.runSmoke = async function() {
     steps.push(await recordStep('CREATE TASK', async () => {
       const taskData = {
         name: 'Book dentist appointment',
-        description: 'QA test task for dentist appointment',
-        estimated_hours: 0.5, // 30 minutes = 0.5 hours
-        deadline_date: getISTTomorrow(),
-        life_area_id: QA_LIFE_AREA_ID,
         user_id: QA_USER_ID
       };
       
