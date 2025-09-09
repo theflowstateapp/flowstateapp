@@ -1,5 +1,5 @@
-const { requireQASecret } = require("../../lib/qa-auth.js");
-const { runSmoke } = require("../../lib/qa-smoke.js");
+const { requireQASecret } = require("../lib/qa-auth.js");
+const { runSmoke } = require("../lib/qa-smoke.js");
 const { createClient } = require('@supabase/supabase-js');
 
 // Initialize Supabase client
