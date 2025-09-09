@@ -8,13 +8,13 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Fixed QA workspace ID
-const QA_WORKSPACE_ID = '550e8400-e29b-41d4-a716-446655440000';
+// Fixed QA workspace and user IDs
+const QA_WORKSPACE_ID = 'qa-ws';
+const QA_USER_ID = 'qa-user-12345'; // Fixed QA user ID
 
 // Helper to make internal API calls
 async function callInternalAPI(endpoint, method = 'GET', body = null) {
-  // Use the production domain for internal calls
-  const baseUrl = 'https://theflowstateapp.com';
+  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
   const url = `${baseUrl}/api${endpoint}`;
   
   const options = {
@@ -104,12 +104,13 @@ module.exports.runSmoke = async function() {
     steps.push(await recordStep('CREATE TASK', async () => {
       const taskData = {
         name: 'Book dentist appointment',
-        description: 'Schedule dentist appointment for next week',
-        priority_matrix: 'Priority 4. Low',
-        estimated_hours: 0.5,
+        description: 'QA test task for dentist appointment',
+        status: 'Not Started',
+        priority_matrix: 'Priority 2. High',
+        estimated_hours: 0.5, // 30 minutes = 0.5 hours
         deadline_date: getISTTomorrow(),
-        life_area_id: '550e8400-e29b-41d4-a716-446655440001',
-        user_id: QA_WORKSPACE_ID
+        life_area_id: 'a-health',
+        user_id: QA_USER_ID
       };
       
       const { data: task, error } = await supabase
@@ -219,20 +220,20 @@ module.exports.runSmoke = async function() {
       
       const { data: tasks, error } = await supabase
         .from('tasks')
-        .select('estimated_hours, time_tracker_start, time_tracker_end')
-        .eq('user_id', QA_WORKSPACE_ID)
-        .gte('do_date', today)
-        .lte('do_date', weekEnd.toISOString().split('T')[0]);
+        .select('estimated_hours, start_date, completed_date')
+        .eq('user_id', QA_USER_ID)
+        .gte('start_date', today)
+        .lte('start_date', weekEnd.toISOString().split('T')[0]);
       
       if (error) throw new Error(`Agenda query failed: ${error.message}`);
       
       const scheduledMinutes = tasks?.reduce((sum, task) => {
-        if (task.time_tracker_start && task.time_tracker_end) {
-          const start = new Date(task.time_tracker_start);
-          const end = new Date(task.time_tracker_end);
+        if (task.start_date && task.completed_date) {
+          const start = new Date(task.start_date);
+          const end = new Date(task.completed_date);
           return sum + Math.round((end - start) / (1000 * 60));
         }
-        return sum + ((task.estimated_hours || 0) * 60);
+        return sum + (task.estimated_hours ? task.estimated_hours * 60 : 0);
       }, 0) || 0;
       
       if (scheduledMinutes <= 0) {
