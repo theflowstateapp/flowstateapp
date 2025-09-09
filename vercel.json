@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "framework": null,
-  "buildCommand": "echo 'No build needed for API-only project'",
-  "outputDirectory": ".",
+  "framework": "create-react-app",
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
   "rewrites": [
     { "source": "/", "destination": "/api/site/home" },
 
@@ -16,20 +16,20 @@
     { "source": "/demo/settings",   "destination": "/api/site/home?route=demo&page=settings" },
     { "source": "/demo/calendar",   "destination": "/api/site/home?route=demo&page=agenda" },
 
-    { "source": "/app",             "destination": "/api/site/home?route=app&page=dashboard" },
-    { "source": "/app/",            "destination": "/api/site/home?route=app&page=dashboard" },
-    { "source": "/app/capture",     "destination": "/api/site/home?route=app&page=capture" },
-    { "source": "/app/tasks",       "destination": "/api/site/home?route=app&page=tasks" },
-    { "source": "/app/focus",       "destination": "/api/site/home?route=app&page=focus" },
-    { "source": "/app/agenda",      "destination": "/api/site/home?route=app&page=agenda" },
-    { "source": "/app/habits",      "destination": "/api/site/home?route=app&page=habits" },
-    { "source": "/app/journal",     "destination": "/api/site/home?route=app&page=journal" },
-    { "source": "/app/review",      "destination": "/api/site/home?route=app&page=review" },
-    { "source": "/app/settings",    "destination": "/api/site/home?route=app&page=settings" },
-    { "source": "/app/calendar",    "destination": "/api/site/home?route=app&page=agenda" },
+    { "source": "/app",             "destination": "/index.html" },
+    { "source": "/app/",            "destination": "/index.html" },
+    { "source": "/app/capture",     "destination": "/index.html" },
+    { "source": "/app/tasks",       "destination": "/index.html" },
+    { "source": "/app/focus",       "destination": "/index.html" },
+    { "source": "/app/agenda",      "destination": "/index.html" },
+    { "source": "/app/habits",      "destination": "/index.html" },
+    { "source": "/app/journal",     "destination": "/index.html" },
+    { "source": "/app/review",      "destination": "/index.html" },
+    { "source": "/app/settings",    "destination": "/index.html" },
+    { "source": "/app/calendar",    "destination": "/index.html" },
 
-    { "source": "/dashboard",       "destination": "/api/site/home?route=app&page=dashboard" },
-    { "source": "/app-dashboard",   "destination": "/api/site/home?route=app&page=dashboard" },
+    { "source": "/dashboard",       "destination": "/index.html" },
+    { "source": "/app-dashboard",   "destination": "/index.html" },
 
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
