@@ -39,20 +39,20 @@ module.exports = async function handler(req, res) {
 
     const counts = {};
 
-    // Ensure workspace exists
+    // Ensure profile exists
     await withDbRetry(async () => {
-      const { data: workspace } = await supabase
-        .from('workspaces')
+      const { data: profile } = await supabase
+        .from('profiles')
         .upsert({
           id: QA_WORKSPACE_ID,
-          name: 'QA Workspace',
-          timezone: 'Asia/Kolkata',
-          is_demo: true
+          email: 'qa-test@example.com',
+          full_name: 'QA Test User',
+          timezone: 'Asia/Kolkata'
         }, { onConflict: 'id' })
         .select()
         .single();
       
-      counts.workspace = workspace ? 1 : 0;
+      counts.profile = profile ? 1 : 0;
     });
 
     // Create life areas
@@ -246,7 +246,7 @@ module.exports = async function handler(req, res) {
 
     res.status(200).json({
       ok: true,
-      workspaceId: QA_WORKSPACE_ID,
+      profileId: QA_WORKSPACE_ID,
       counts
     });
 
