@@ -83,7 +83,7 @@ export default async function handler(req, res) {
         .select('id, name, estimated_hours, priority_matrix, deadline_date')
         .eq('user_id', userId)
         .neq('status', 'Done')
-        .is('start_at', null)
+        .is('start_date', null)
         .is('end_at', null)
         .eq('priority_matrix', 'HIGH')
         .order('deadline_date', { ascending: true })
@@ -99,7 +99,7 @@ export default async function handler(req, res) {
         .select('id, name, estimated_hours, priority_matrix, deadline_date')
         .eq('user_id', userId)
         .neq('status', 'Done')
-        .is('start_at', null)
+        .is('start_date', null)
         .is('end_at', null)
         .eq('priority_matrix', 'MEDIUM')
         .order('deadline_date', { ascending: true })
@@ -137,8 +137,8 @@ export default async function handler(req, res) {
           const result = await sb
             .from('tasks')
             .update({
-              start_at: scheduledSlot.start.toISOString(),
-              end_at: scheduledSlot.end.toISOString()
+              start_date: scheduledSlot.start.toISOString(),
+              completed_date: scheduledSlot.end.toISOString()
             })
             .eq('id', task.id);
           
