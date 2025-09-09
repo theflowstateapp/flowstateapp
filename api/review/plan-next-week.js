@@ -65,7 +65,7 @@ export default async function handler(req, res) {
     const { data: carryOvers } = await withDbRetry(async () => {
       const result = await sb
         .from('tasks')
-        .select('id, name, estimated_hours, context, priority_matrix, deadline_date')
+        .select('id, name, estimated_hours, priority_matrix, deadline_date')
         .eq('workspace_id', workspaceId)
         .neq('status', 'Done')
         .lt('due_at', new Date().toISOString())
@@ -79,7 +79,7 @@ export default async function handler(req, res) {
     const { data: highPriorityTasks } = await withDbRetry(async () => {
       const result = await sb
         .from('tasks')
-        .select('id, name, estimated_hours, context, priority_matrix, deadline_date')
+        .select('id, name, estimated_hours, priority_matrix, deadline_date')
         .eq('workspace_id', workspaceId)
         .neq('status', 'Done')
         .is('start_at', null)
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
     const { data: mediumTasks } = await withDbRetry(async () => {
       const result = await sb
         .from('tasks')
-        .select('id, name, estimated_hours, context, priority_matrix, deadline_date')
+        .select('id, name, estimated_hours, priority_matrix, deadline_date')
         .eq('workspace_id', workspaceId)
         .neq('status', 'Done')
         .is('start_at', null)

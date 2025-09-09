@@ -56,8 +56,8 @@ module.exports = async (req, res) => {
     // Get task details
     const { data: tasks, error: tasksError } = await supabase
       .from('tasks')
-      .select('id, name, estimated_hours, context, priority_matrix')
-      .eq('workspace_id', workspaceId)
+      .select('id, name, estimated_hours, priority_matrix')
+      .eq('user_id', userId)
       .in('id', taskIds);
 
     if (tasksError) {
