@@ -46,9 +46,9 @@ module.exports = async (req, res) => {
       });
     }
 
-    // For demo purposes, use demo workspace
-    const workspaceId = 'demo-workspace-1';
-    const userId = 'demo-user-1';
+    // Use QA user ID for testing
+    const workspaceId = 'qa-ws';
+    const userId = 'f6f735ad-aff1-4845-b4eb-1f160d304d70'; // QA user ID
     
     const tomorrow = getISTTomorrow();
     const now = getISTNow();

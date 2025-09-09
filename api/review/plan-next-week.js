@@ -57,7 +57,8 @@ export default async function handler(req, res) {
       return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
     }
     const { strategy = 'balanced', maxBlocksPerDay = 3 } = req.body;
-    const workspaceId = req.headers['x-workspace-id'] || 'demo-workspace-1';
+    const workspaceId = req.headers['x-workspace-id'] || 'qa-ws';
+    const userId = 'f6f735ad-aff1-4845-b4eb-1f160d304d70'; // QA user ID
     
     const sb = supabaseAdmin();
     
@@ -66,7 +67,7 @@ export default async function handler(req, res) {
       const result = await sb
         .from('tasks')
         .select('id, name, estimated_hours, priority_matrix, deadline_date')
-        .eq('workspace_id', workspaceId)
+        .eq('user_id', userId)
         .neq('status', 'Done')
         .lt('due_at', new Date().toISOString())
         .order('priority_matrix', { ascending: false })
@@ -80,7 +81,7 @@ export default async function handler(req, res) {
       const result = await sb
         .from('tasks')
         .select('id, name, estimated_hours, priority_matrix, deadline_date')
-        .eq('workspace_id', workspaceId)
+        .eq('user_id', userId)
         .neq('status', 'Done')
         .is('start_at', null)
         .is('end_at', null)
@@ -96,7 +97,7 @@ export default async function handler(req, res) {
       const result = await sb
         .from('tasks')
         .select('id, name, estimated_hours, priority_matrix, deadline_date')
-        .eq('workspace_id', workspaceId)
+        .eq('user_id', userId)
         .neq('status', 'Done')
         .is('start_at', null)
         .is('end_at', null)
