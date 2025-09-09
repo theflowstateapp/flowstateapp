@@ -73,8 +73,6 @@ const getBalancedWindow = (date) => {
 
 module.exports = {
   getISTNow,
-  getISTDay,
-  getISTTomorrowDay,
   getISTToday,
   getISTTomorrow,
   isShutdownTime,
