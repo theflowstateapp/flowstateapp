@@ -24,7 +24,7 @@ module.exports = async function handler(req, res) {
     const taskData = {
       name: 'Test Task',
       user_id: 'f6f735ad-aff1-4845-b4eb-1f160d304d70', // Existing user
-      status: 'Not Started',
+      status: 'In Progress',
       priority_matrix: 'Priority 1. Important & Urgent'
     };
 
