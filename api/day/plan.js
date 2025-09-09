@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     // Get task details
     const { data: tasks, error: tasksError } = await supabase
       .from('tasks')
-      .select('id, title, estimate_mins, context, priority')
+      .select('id, name, estimated_hours, context, priority_matrix')
       .eq('workspace_id', workspaceId)
       .in('id', taskIds);
 
@@ -86,7 +86,7 @@ module.exports = async (req, res) => {
       if (proposal) {
         planned.push({
           taskId: task.id,
-          title: task.title,
+          title: task.name,
           start: proposal.start,
           end: proposal.end,
           context: proposal.context,
@@ -120,7 +120,7 @@ module.exports = async (req, res) => {
       } else {
         unplanned.push({
           taskId: task.id,
-          title: task.title,
+          title: task.name,
           reason: 'No available time slot'
         });
       }
