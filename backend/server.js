@@ -13,6 +13,32 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+// Production environment validation
+if (NODE_ENV === 'production') {
+  console.log('🚀 Starting in PRODUCTION mode');
+  
+  // Validate required production environment variables
+  const requiredEnvVars = [
+    'SUPABASE_URL',
+    'SUPABASE_SERVICE_ROLE_KEY',
+    'JWT_SECRET',
+    'FRONTEND_URL'
+  ];
+  
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    console.error('❌ Missing required environment variables for production:', missingVars);
+    process.exit(1);
+  }
+  
+  console.log('✅ All required production environment variables are set');
+} else {
+  console.log('🔧 Starting in DEVELOPMENT mode');
+}
 
 // Setup production features
 setupSecurity(app);
@@ -64,14 +90,18 @@ app.use(morgan('combined'));
 // API monitoring
 app.use(apiMonitoring);
 
-// Rate limiting - relaxed for development
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10000, // Much higher limit for development
+// Rate limiting - environment-aware
+const rateLimitConfig = {
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+  max: NODE_ENV === 'production' 
+    ? parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000
+    : parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 10000, // Higher limit for development
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
-});
+};
+
+const limiter = rateLimit(rateLimitConfig);
 
 app.use(limiter);
 

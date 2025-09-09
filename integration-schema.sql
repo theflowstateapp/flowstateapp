@@ -316,3 +316,4 @@ GRANT SELECT ON public.integration_summary TO authenticated;
 
 
 
+

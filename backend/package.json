@@ -4,10 +4,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "start:prod": "NODE_ENV=production node server.js",
     "dev": "nodemon server.js",
+    "dev:prod": "NODE_ENV=production nodemon server.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "build": "echo 'No build step required for Node.js'",
+    "deploy": "npm run start:prod",
+    "health": "curl -f http://localhost:3001/api/health || exit 1",
+    "status": "curl -f http://localhost:3001/api/status || exit 1"
   },
   "keywords": [],
   "author": "",
