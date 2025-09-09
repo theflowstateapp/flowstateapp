@@ -13,7 +13,8 @@ const QA_WORKSPACE_ID = 'qa-ws';
 
 // Helper to make internal API calls
 async function callInternalAPI(endpoint, method = 'GET', body = null) {
-  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+  // Use the production domain for internal calls
+  const baseUrl = 'https://theflowstateapp.com';
   const url = `${baseUrl}/api${endpoint}`;
   
   const options = {
