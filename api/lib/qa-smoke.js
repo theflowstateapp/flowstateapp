@@ -8,10 +8,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Fixed QA workspace and user IDs (using existing data from database)
+// Fixed QA workspace and user IDs
 const QA_WORKSPACE_ID = 'qa-ws';
-const QA_USER_ID = 'f6f735ad-aff1-4845-b4eb-1f160d304d70'; // Existing user from profiles table
-const QA_LIFE_AREA_ID = '521826d3-6cdb-4073-88e6-b4315d1c907f'; // Existing life_area from life_areas table
+const QA_USER_ID = 'qa-user-12345'; // Fixed QA user ID
 
 // Helper to make internal API calls
 async function callInternalAPI(endpoint, method = 'GET', body = null) {
@@ -57,16 +56,18 @@ module.exports.runSmoke = async function() {
     const steps = [];
     const artifacts = {};
 
-    // Step 1: RESET (SKIPPED - using existing data)
+    // Step 1: RESET
     steps.push(await recordStep('RESET', async () => {
-      // Skip reset - work with existing data
-      return { reset: true, skipped: true };
+      const result = await callInternalAPI('/qa/reset', 'POST');
+      if (!result.ok) throw new Error('Reset failed');
+      return result;
     })());
 
-    // Step 2: SEED (SKIPPED - using existing data)
+    // Step 2: SEED
     steps.push(await recordStep('SEED', async () => {
-      // Skip seed - work with existing data
-      return { seeded: true, skipped: true };
+      const result = await callInternalAPI('/qa/seed', 'POST');
+      if (!result.ok) throw new Error('Seed failed');
+      return result;
     })());
 
     // Step 3: CAPTURE
@@ -104,11 +105,11 @@ module.exports.runSmoke = async function() {
       const taskData = {
         name: 'Book dentist appointment',
         description: 'QA test task for dentist appointment',
-        status: 'In Progress',
-        priority_matrix: 'Priority 1. Important & Urgent',
+        status: 'Not Started',
+        priority_matrix: 'Priority 2. High',
         estimated_hours: 0.5, // 30 minutes = 0.5 hours
         deadline_date: getISTTomorrow(),
-        life_area_id: QA_LIFE_AREA_ID,
+        life_area_id: 'a-health',
         user_id: QA_USER_ID
       };
       
