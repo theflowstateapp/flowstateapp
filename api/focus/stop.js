@@ -107,7 +107,7 @@ module.exports = async function handler(req, res) {
     if (session.task_id) {
       const { data: taskData } = await supabase
         .from('tasks')
-        .select('id, title')
+        .select('id, name')
         .eq('id', session.task_id)
         .single();
       
@@ -130,7 +130,7 @@ module.exports = async function handler(req, res) {
       },
       task: task ? {
         id: task.id,
-        title: task.title
+        title: task.name
       } : null,
       summary: {
         duration: actualMinutes,

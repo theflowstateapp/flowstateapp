@@ -43,7 +43,7 @@ module.exports = async function handler(req, res) {
     if (taskId) {
       const { data: taskData, error: taskError } = await supabase
         .from('tasks')
-        .select('id, title, start_at, end_at')
+        .select('id, name, start_date, completed_date')
         .eq('id', taskId)
         .single();
       
@@ -105,9 +105,9 @@ module.exports = async function handler(req, res) {
       sessionId: session.id,
       task: task ? {
         id: task.id,
-        title: task.title,
-        startAt: task.start_at,
-        endAt: task.end_at
+        title: task.name,
+        startAt: task.start_date,
+        endAt: task.completed_date
       } : null,
       startAt: startAt.toISOString(),
       plannedMinutes,
