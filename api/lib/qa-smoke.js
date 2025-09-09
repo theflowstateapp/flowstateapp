@@ -104,7 +104,7 @@ module.exports.runSmoke = async function() {
       const taskData = {
         name: 'Book dentist appointment',
         description: 'QA test task for dentist appointment',
-        status: 'Not Started',
+        status: 'In Progress',
         priority_matrix: 'Priority 1. Important & Urgent',
         estimated_hours: 0.5, // 30 minutes = 0.5 hours
         deadline_date: getISTTomorrow(),
