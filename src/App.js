@@ -53,6 +53,8 @@ function App() {
           <Route path="/test" element={<TestPage />} />
           <Route path="/demo" element={<AppLayout />} />
           <Route path="/demo/*" element={<AppLayout />} />
+          <Route path="/app" element={<AppLayout />} />
+          <Route path="/app/*" element={<AppLayout />} />
           <Route path="/dashboard" element={<AppLayout />} />
           <Route path="/dashboard/*" element={<AppLayout />} />
           <Route path="/shutdown" element={<AppLayout />} />
