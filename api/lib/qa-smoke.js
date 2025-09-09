@@ -103,13 +103,13 @@ module.exports.runSmoke = async function() {
     // Step 5: CREATE TASK
     steps.push(await recordStep('CREATE TASK', async () => {
       const taskData = {
-        title: 'Book dentist appointment',
-        priority: 'HIGH',
+        name: 'Book dentist appointment',
+        description: 'Schedule dentist appointment for next week',
+        priority_matrix: 'Priority 2. High',
         estimated_hours: 0.5,
-        context: 'Health',
-        due_at: getISTTomorrow() + 'T17:00:00',
-        workspace_id: QA_WORKSPACE_ID,
-        life_area_id: 'a-health'
+        deadline_date: getISTTomorrow(),
+        life_area_id: 'a-health',
+        user_id: QA_WORKSPACE_ID
       };
       
       const { data: task, error } = await supabase
@@ -219,17 +219,17 @@ module.exports.runSmoke = async function() {
       
       const { data: tasks, error } = await supabase
         .from('tasks')
-        .select('estimated_hours, start_at, end_at')
-        .eq('workspace_id', QA_WORKSPACE_ID)
-        .gte('start_at', today)
-        .lte('start_at', weekEnd.toISOString().split('T')[0]);
+        .select('estimated_hours, time_tracker_start, time_tracker_end')
+        .eq('user_id', QA_WORKSPACE_ID)
+        .gte('do_date', today)
+        .lte('do_date', weekEnd.toISOString().split('T')[0]);
       
       if (error) throw new Error(`Agenda query failed: ${error.message}`);
       
       const scheduledMinutes = tasks?.reduce((sum, task) => {
-        if (task.start_at && task.end_at) {
-          const start = new Date(task.start_at);
-          const end = new Date(task.end_at);
+        if (task.time_tracker_start && task.time_tracker_end) {
+          const start = new Date(task.time_tracker_start);
+          const end = new Date(task.time_tracker_end);
           return sum + Math.round((end - start) / (1000 * 60));
         }
         return sum + ((task.estimated_hours || 0) * 60);
