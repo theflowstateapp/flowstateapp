@@ -90,12 +90,8 @@ module.exports = async function handler(req, res) {
       .from('focus_events')
       .insert({
         session_id: sessionId,
-        type: 'stop',
-        payload: { 
-          actual_minutes: actualMinutes,
-          self_rating: selfRating,
-          distraction_count: session.distraction_count
-        }
+        event_type: 'end',
+        notes: `Completed ${actualMinutes} minutes, rating: ${selfRating}, distractions: ${session.distraction_count}`
       });
     
     if (eventError) {
