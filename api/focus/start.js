@@ -34,9 +34,9 @@ module.exports = async function handler(req, res) {
     
     const { taskId, plannedMinutes = 50, intention, ritual } = req.body;
     
-    // For demo purposes, use demo workspace
-    const workspaceId = 'demo-workspace-1';
-    const userId = 'demo-user-1';
+    // Use QA user ID for testing
+    const workspaceId = 'qa-ws';
+    const userId = 'f6f735ad-aff1-4845-b4eb-1f160d304d70'; // QA user ID
     
     // Get task details if taskId provided
     let task = null;
