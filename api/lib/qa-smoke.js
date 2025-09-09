@@ -105,7 +105,7 @@ module.exports.runSmoke = async function() {
       const taskData = {
         name: 'Book dentist appointment',
         description: 'Schedule dentist appointment for next week',
-        priority_matrix: 'Priority 2. High',
+        priority_matrix: 'Priority 4. Low',
         estimated_hours: 0.5,
         deadline_date: getISTTomorrow(),
         life_area_id: '550e8400-e29b-41d4-a716-446655440001',
