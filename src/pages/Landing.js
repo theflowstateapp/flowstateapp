@@ -32,6 +32,10 @@ const Landing = () => {
     document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleTryDemo = () => {
+    navigate('/app');
+  };
+
   const handleContactSales = () => {
     navigate('/contact');
   };
@@ -118,7 +122,7 @@ const Landing = () => {
         "P.A.R.A. organization system",
         "Mobile and web access"
       ],
-      cta: "Start Free",
+      cta: "Try Demo",
       popular: false,
       gradient: "from-gray-50 to-gray-100"
     },
@@ -193,6 +197,12 @@ const Landing = () => {
             {/* Desktop CTA Buttons */}
             <div className="hidden lg:flex items-center space-x-4">
               <button 
+                onClick={handleTryDemo}
+                className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+              >
+                Try Demo
+              </button>
+              <button 
                 onClick={handleLogin}
                 className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
               >
@@ -247,11 +257,11 @@ const Landing = () => {
                 <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button 
-                onClick={handleWatchDemo}
+                onClick={handleTryDemo}
                 className="w-full sm:w-auto bg-white text-gray-700 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-base sm:text-lg border-2 border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 flex items-center justify-center"
               >
                 <Play className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
-                Watch Demo
+                Try Demo
               </button>
             </div>
             
@@ -445,7 +455,7 @@ const Landing = () => {
                 </ul>
                 
                 <button 
-                  onClick={handleStartTrial}
+                  onClick={plan.cta === "Try Demo" ? handleTryDemo : handleStartTrial}
                   className={`w-full py-3 px-6 rounded-full font-semibold transition-all duration-300 ${
                     plan.popular
                       ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:shadow-lg transform hover:scale-105'
@@ -476,8 +486,15 @@ const Landing = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button 
-                onClick={handleStartTrial}
+                onClick={handleTryDemo}
                 className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center"
+              >
+                Try Demo
+                <Play className="ml-2 w-5 h-5" />
+              </button>
+              <button 
+                onClick={handleStartTrial}
+                className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300 flex items-center"
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 w-5 h-5" />

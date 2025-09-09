@@ -152,6 +152,9 @@ export const UserAnalytics = {
       case 'return':
         analytics.engagement.returnVisits += count;
         break;
+      default:
+        // Unknown engagement type - no action needed
+        break;
     }
     UserAnalytics.saveAnalytics();
   },
@@ -234,6 +237,7 @@ export const UserAnalytics = {
     try {
       localStorage.setItem('userAnalytics', JSON.stringify(UserAnalytics.analytics));
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to save user analytics:', error);
     }
   },
@@ -246,8 +250,18 @@ export const UserAnalytics = {
         UserAnalytics.analytics = JSON.parse(saved);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to load user analytics:', error);
     }
+  },
+
+  // Initialize analytics for a user
+  initialize: (user) => {
+    UserAnalytics.loadAnalytics();
+    UserAnalytics.trackUserJourney('user_initialized', 'app', new Date().toISOString());
+    UserAnalytics.trackPageView('app');
+    // eslint-disable-next-line no-console
+    console.log('UserAnalytics initialized for user:', user?.email || 'anonymous');
   },
 
   // Reset analytics

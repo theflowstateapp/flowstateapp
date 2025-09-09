@@ -1,10 +1,7 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const Sidebar = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  
   const sidebarItems = [
     { label: 'Dashboard', href: '/app', icon: '🏠' },
     { label: 'Capture', href: '/app/capture', icon: '✍️' },
@@ -17,15 +14,6 @@ const Sidebar = () => {
     { label: 'Settings', href: '/app/settings', icon: '⚙️' }
   ];
   
-  const isActive = (href) => {
-    // Check if current path starts with the href (prefix match)
-    return location.pathname.startsWith(href);
-  };
-  
-  const handleNavigation = (href) => {
-    navigate(href);
-  };
-  
   return (
     <div className="h-screen bg-white border-r border-gray-200 flex flex-col">
       {/* Logo/Header */}
@@ -37,18 +25,20 @@ const Sidebar = () => {
       {/* Navigation Items */}
       <nav className="flex-1 p-4 space-y-2">
         {sidebarItems.map((item) => (
-          <button
+          <NavLink
             key={item.href}
-            onClick={() => handleNavigation(item.href)}
-            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-              isActive(item.href)
-                ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-            }`}
+            to={item.href}
+            className={({ isActive }) =>
+              `w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                isActive
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+              }`
+            }
           >
             <span className="text-lg">{item.icon}</span>
             <span className="font-medium">{item.label}</span>
-          </button>
+          </NavLink>
         ))}
       </nav>
       

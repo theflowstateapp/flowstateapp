@@ -1,8 +1,16 @@
 // Development utilities for testing onboarding tour
 export const TourUtils = {
+  // Initialize tour utilities
+  initialize: () => {
+    // Initialize tour utilities for the user
+    // eslint-disable-next-line no-console
+    console.log('TourUtils initialized');
+  },
+
   // Reset tour completion status (for testing)
   resetTour: () => {
     localStorage.removeItem('flowstate-tour-completed');
+    // eslint-disable-next-line no-console
     console.log('Tour reset - will show on next login');
   },
 
@@ -31,9 +39,14 @@ export const TourUtils = {
 // Make available in development console
 if (process.env.NODE_ENV === 'development') {
   window.TourUtils = TourUtils;
+  // eslint-disable-next-line no-console
   console.log('TourUtils available in console:');
+  // eslint-disable-next-line no-console
   console.log('- TourUtils.resetTour() - Reset tour completion');
+  // eslint-disable-next-line no-console
   console.log('- TourUtils.startTour() - Start tour immediately');
+  // eslint-disable-next-line no-console
   console.log('- TourUtils.isTourCompleted() - Check completion status');
+  // eslint-disable-next-line no-console
   console.log('- TourUtils.getTourAnalytics() - Get analytics data');
 }
