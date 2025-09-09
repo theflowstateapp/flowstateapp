@@ -9,6 +9,11 @@ const stripe = require('stripe');
 const { setupSecurity } = require('./security');
 const { setupPerformance, optimizeDatabase, optimizeMemory } = require('./performance');
 const { logger, apiMonitoring, systemMonitoring, monitorDatabase } = require('./monitoring');
+
+// Import authentication system
+const authRoutes = require('./src/routes/auth');
+const { authenticateToken, optionalAuth } = require('./src/middleware/auth');
+
 require('dotenv').config();
 
 const app = express();
@@ -104,6 +109,9 @@ const rateLimitConfig = {
 const limiter = rateLimit(rateLimitConfig);
 
 app.use(limiter);
+
+// Authentication routes (comprehensive system)
+app.use('/api/auth', authRoutes);
 
 // OpenAI specific rate limiting
 const openaiLimiter = rateLimit({
@@ -1004,8 +1012,8 @@ app.post('/api/analytics', (req, res) => {
   });
 });
 
-// Global capture endpoint
-app.post('/api/capture', async (req, res) => {
+// Global capture endpoint (protected)
+app.post('/api/capture', optionalAuth, async (req, res) => {
   try {
     const { text, type = 'task' } = req.body;
     
@@ -1035,7 +1043,7 @@ app.post('/api/capture', async (req, res) => {
       priority: sanitizedText.toLowerCase().includes('urgent') || sanitizedText.toLowerCase().includes('asap') ? 'High' : 'Medium',
       status: 'Not Started',
       created_at: new Date().toISOString(),
-      user_id: 'demo-user-1'
+      user_id: req.userId || 'demo-user-1' // Use authenticated user ID if available
     };
     
     // In a real app, you'd save this to your database
