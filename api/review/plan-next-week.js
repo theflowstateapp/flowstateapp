@@ -110,7 +110,7 @@ export default async function handler(req, res) {
     });
     
     // Combine and prioritize tasks
-    const tasksToSchedule = [...carryOvers, ...highPriorityTasks, ...mediumTasks];
+    const tasksToSchedule = [...(carryOvers || []), ...(highPriorityTasks || []), ...(mediumTasks || [])];
     
     // 2) Schedule tasks
     const scheduled = [];
